@@ -1457,46 +1457,97 @@ const App = () => {
 
 // --- Modern V2 Components ---
 
-const HeaderV2 = () => (
-  <header className="bg-gradient-to-b from-christmas-red via-red-700 to-christmas-red text-white relative overflow-visible">
-    {/* Decorative snow dots */}
-    <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+const HeaderV2 = ({ scrollY }: { scrollY: number }) => {
+  // Header and logo scroll together at 0.5x speed
+  // They stop when logo center aligns with navbar bottom edge
 
-    <div className="max-w-6xl mx-auto px-6 pt-6 pb-24 relative">
-      {/* Back link */}
-      <a
-        href="#"
-        className="absolute top-4 right-6 text-xs font-medium text-white/70 hover:text-white transition-colors flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full hover:bg-white/20"
+  // Logo dimensions: 10.5rem = 168px, so radius = 84px
+  const logoSize = 168;
+  const logoRadius = logoSize / 2; // 84px
+
+  // Header height (pt-6 + content + pb-24) is roughly 140px
+  // Logo is positioned at -bottom-16 (-64px), so logo center starts at:
+  // headerHeight + 64px - logoRadius = 140 + 64 - 84 = 120px from top
+  const headerHeight = 140;
+  const logoStartFromTop = headerHeight - 16; // Logo top edge at bottom of header minus -bottom-16
+  const logoCenterStart = logoStartFromTop + logoRadius; // ~208px from viewport top
+
+  // When sticky: logo center should align with navbar bottom
+  // navbar bottom should be at logoRadius from top (so center = logoRadius)
+  // Maximum scroll offset before stopping: when logoCenter would reach logoRadius
+  const maxScrollOffset = (logoCenterStart - logoRadius) * 2; // ~248px of scroll before stopping
+
+  const parallaxSpeed = 0.5;
+  const rawOffset = scrollY * parallaxSpeed;
+  const headerOffset = Math.min(rawOffset, maxScrollOffset * parallaxSpeed); // Cap the offset
+
+  const headerOpacity = Math.max(0, 1 - scrollY / 300);
+
+  return (
+    <>
+      <header
+        className="fixed top-0 left-0 right-0 bg-gradient-to-b from-christmas-red via-red-700 to-christmas-red text-white overflow-visible z-50"
+        style={{
+          transform: `translateY(-${headerOffset}px)`,
+        }}
       >
-        ← Klassische Ansicht
-      </a>
+        {/* Decorative snow dots */}
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, white 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+          }}
+        ></div>
 
-      {/* Centered content */}
-      <div className="flex flex-col items-center text-center">
-        <p className="text-red-200 text-sm font-medium mb-3 tracking-wide">Lions Club Bad Dürkheim</p>
-        <h1 className="text-2xl sm:text-3xl font-display font-bold tracking-tight mb-2">
-          🎄 Adventskalender Checker
-        </h1>
-        <p className="text-red-100/80 text-sm">Dezember 2025</p>
-      </div>
-    </div>
+        <div
+          className="max-w-6xl mx-auto px-6 pt-6 pb-24 relative transition-opacity duration-100"
+          style={{ opacity: headerOpacity }}
+        >
+          {/* Back link */}
+          <a
+            href="#"
+            className="absolute top-4 right-6 text-xs font-medium text-white/70 hover:text-white transition-colors flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full hover:bg-white/20"
+          >
+            ← Klassische Ansicht
+          </a>
 
-    {/* Logo breaking out at bottom */}
-    <div className="absolute left-1/2 -translate-x-1/2 -bottom-16 z-10">
-      <div className="relative">
-        <div className="absolute inset-0 bg-christmas-gold rounded-full blur-2xl opacity-50 scale-125 animate-pulse-soft"></div>
-        <div className="relative w-32 h-32 bg-white rounded-full shadow-2xl flex items-center justify-center overflow-hidden border-4 border-christmas-gold ring-4 ring-christmas-red">
-          <img
-            src="/lionslogo.png"
-            alt="Lions Club"
-            className="object-contain"
-            style={{ width: '5.5rem', height: '5.5rem' }}
-          />
+          {/* Centered content */}
+          <div className="flex flex-col items-center text-center">
+            <p className="text-red-200 text-sm font-medium mb-3 tracking-wide">
+              Lions Club Bad Dürkheim
+            </p>
+            <h1 className="text-2xl sm:text-3xl font-display font-bold tracking-tight mb-2">
+              🎄 Adventskalender Checker
+            </h1>
+            <p className="text-red-100/80 text-sm">Dezember 2025</p>
+          </div>
         </div>
-      </div>
-    </div>
-  </header>
-);
+
+        {/* Logo - positioned at bottom of header, moves with header */}
+        <div
+          className="absolute left-1/2 -bottom-16 z-20"
+          style={{
+            transform: "translateX(-50%)",
+          }}
+        >
+          <div className="relative">
+            <div className="absolute inset-0 bg-christmas-gold rounded-full blur-2xl opacity-50 scale-125 animate-pulse-soft"></div>
+            <div className="relative w-[10.5rem] h-[10.5rem] bg-white rounded-full shadow-2xl flex items-center justify-center overflow-hidden border-4 border-christmas-gold ring-4 ring-christmas-red">
+              <img
+                src="/lionslogo.png"
+                alt="Lions Club"
+                className="object-contain"
+                style={{ width: "8.5rem", height: "8.5rem" }}
+              />
+            </div>
+          </div>
+        </div>
+      </header>
+    </>
+  );
+};
 
 const CardV2: React.FC<{
   children: React.ReactNode;
@@ -1659,8 +1710,14 @@ const DayCardV2: React.FC<{
             </p>
 
             {/* Winning Numbers - Single row, horizontally scrollable */}
-            <div className="mt-auto overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              <div className="flex gap-1.5 pb-1" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <div
+              className="mt-auto overflow-x-auto scrollbar-hide"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              <div
+                className="flex gap-1.5 pb-1"
+                style={{ WebkitOverflowScrolling: "touch" }}
+              >
                 {displayNumbers.map((num) => {
                   const isMatch = allMembers.some((m) => m.number === num);
                   return (
@@ -1740,6 +1797,16 @@ const AppV2 = () => {
   const [scrapeError, setScrapeError] = useState<string | null>(null);
   const [showQrModal, setShowQrModal] = useState(false);
   const [initialCheckDone, setInitialCheckDone] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+
+  // Track scroll position for parallax effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Load Data
   useEffect(() => {
@@ -2604,11 +2671,15 @@ const AppV2 = () => {
 
   return (
     <div className="min-h-screen modern-bg font-modern flex flex-col">
-      <HeaderV2 />
+      <HeaderV2 scrollY={scrollY} />
 
-      <main className="max-w-6xl mx-auto px-6 pt-24 pb-10 flex-1 w-full">
+      {/* Spacer for fixed header + logo */}
+      <div className="h-96"></div>
+
+      {/* Main content - scrolls faster than header (at normal speed) */}
+      <main className="max-w-6xl mx-auto px-6 pt-4 pb-10 w-full flex-1 relative z-20">
         <div className="flex justify-center mb-8">
-          <div className="flex p-1.5 bg-christmas-cream rounded-2xl shadow-sm border border-christmas-green/20 w-full max-w-md">
+          <div className="flex p-1.5 bg-white/50 rounded-2xl shadow-sm border border-christmas-green/20 w-full max-w-md">
             {[
               { id: "dashboard", label: "Kalender", icon: Calendar },
               { id: "groups", label: "Mitglieder", icon: Users },
@@ -2635,7 +2706,7 @@ const AppV2 = () => {
         </div>
       </main>
 
-      <footer className="text-center text-surface-400 text-sm py-10 border-t border-surface-200 mt-10 mx-6">
+      <footer className="text-center text-surface-400 text-sm py-10 border-t border-surface-200 mt-10 max-w-6xl mx-auto px-6">
         <p>
           Lions Club Checker Tool • Nicht verbunden mit Lions Club Bad Dürkheim
         </p>
@@ -2714,7 +2785,7 @@ const AppV2 = () => {
   );
 };
 
-// --- Router ---
+// --- Router Component ---
 
 const Router = () => {
   const [route, setRoute] = useState<"old" | "new">("old");
