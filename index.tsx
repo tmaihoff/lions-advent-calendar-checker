@@ -15,6 +15,7 @@ import {
   Trophy,
   QrCode,
   X,
+  Pencil,
 } from "lucide-react";
 
 // --- Types ---
@@ -89,15 +90,19 @@ const INITIAL_GROUPS: Group[] = [
 // --- Services ---
 
 const UrlService = {
-  // Compact format: name~number~avatar|name~number~avatar
+  // Compact format: groupName;name~number~avatar|name~number~avatar
   // Much shorter than JSON + Base64
   serialize: (groups: Group[]): string => {
     try {
-      const members = groups.flatMap((g) => g.members);
-      // Format: name~number~avatar|name~number~avatar
-      const compact = members
+      const group = groups[0];
+      if (!group) return "";
+      const groupName = group.name;
+      const members = group.members;
+      // Format: groupName;name~number~avatar|name~number~avatar
+      const membersPart = members
         .map((m) => `${m.name}~${m.number}~${m.avatar}`)
         .join("|");
+      const compact = `${groupName};${membersPart}`;
       return encodeURIComponent(compact);
     } catch (e) {
       console.error("Failed to serialize", e);
@@ -112,8 +117,18 @@ const UrlService = {
       // Try new compact format first
       const decoded = decodeURIComponent(data);
       if (decoded.includes("~")) {
-        // New compact format: name~number~avatar|name~number~avatar
-        const memberStrings = decoded.split("|").filter(Boolean);
+        // Check for group name (format: groupName;members)
+        let groupName = "Meine Familie";
+        let membersData = decoded;
+
+        if (decoded.includes(";")) {
+          const [namePart, ...rest] = decoded.split(";");
+          groupName = namePart || "Meine Familie";
+          membersData = rest.join(";"); // In case name contains semicolons
+        }
+
+        // Parse members: name~number~avatar|name~number~avatar
+        const memberStrings = membersData.split("|").filter(Boolean);
         const members: Member[] = memberStrings.map((str) => {
           const [name, number, avatar] = str.split("~");
           return {
@@ -123,7 +138,7 @@ const UrlService = {
             avatar: avatar || "🎅",
           };
         });
-        return [{ id: "g1", name: "Meine Familie", members }];
+        return [{ id: "g1", name: groupName, members }];
       }
 
       // Fallback: try old Base64 JSON format for backwards compatibility
@@ -197,9 +212,6 @@ const Header = () => (
             Bad Dürkheim Ausgabe
           </p>
         </div>
-      </div>
-      <div className="text-xs hidden sm:block bg-black/20 px-3 py-1 rounded-full">
-        v2025.5.1
       </div>
     </div>
   </header>
@@ -475,7 +487,13 @@ const App = () => {
 
   // Load Data
   useEffect(() => {
-    setGroups(StorageService.loadGroups());
+    const loadedGroups = StorageService.loadGroups();
+    // Ensure there's always at least one group
+    if (loadedGroups.length === 0) {
+      setGroups([{ id: generateId(), name: "Meine Gruppe", members: [] }]);
+    } else {
+      setGroups(loadedGroups);
+    }
     setDayData(StorageService.loadWins());
 
     const lastTime = localStorage.getItem("lions_last_check");
@@ -940,6 +958,9 @@ const App = () => {
 
   const GroupsView = () => {
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
+    const [editingGroupName, setEditingGroupName] = useState<string | null>(null);
+    const [groupNameInput, setGroupNameInput] = useState("");
     const [newName, setNewName] = useState("");
     const [newNumber, setNewNumber] = useState("");
     const [selectedAvatar, setSelectedAvatar] = useState("🎅");
@@ -960,11 +981,56 @@ const App = () => {
       resetForm();
     };
 
+    const handleEditMember = (groupId: string, memberId: string) => {
+      if (!newName || !newNumber) return;
+      setGroups(
+        groups.map((g) =>
+          g.id === groupId
+            ? {
+                ...g,
+                members: g.members.map((m) =>
+                  m.id === memberId
+                    ? { ...m, name: newName, number: newNumber, avatar: selectedAvatar }
+                    : m
+                ),
+              }
+            : g
+        )
+      );
+      resetForm();
+    };
+
+    const startEditMember = (member: Member) => {
+      setEditingMemberId(member.id);
+      setNewName(member.name);
+      setNewNumber(member.number);
+      setSelectedAvatar(member.avatar);
+    };
+
     const resetForm = () => {
       setNewName("");
       setNewNumber("");
       setEditingId(null);
+      setEditingMemberId(null);
+      setEditingGroupName(null);
+      setGroupNameInput("");
       setSelectedAvatar("🎅");
+    };
+
+    const startEditGroupName = (group: Group) => {
+      setEditingGroupName(group.id);
+      setGroupNameInput(group.name);
+    };
+
+    const handleSaveGroupName = (groupId: string) => {
+      if (!groupNameInput.trim()) return;
+      setGroups(
+        groups.map((g) =>
+          g.id === groupId ? { ...g, name: groupNameInput.trim() } : g
+        )
+      );
+      setEditingGroupName(null);
+      setGroupNameInput("");
     };
 
     const removeMember = (groupId: string, memberId: string) => {
@@ -989,10 +1055,43 @@ const App = () => {
               <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-600">
                 <Users className="w-5 h-5" />
               </div>
-              <div>
-                <h3 className="font-bold text-lg text-slate-800">
-                  {group.name}
-                </h3>
+              <div className="flex-1">
+                {editingGroupName === group.id ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      value={groupNameInput}
+                      onChange={(e) => setGroupNameInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSaveGroupName(group.id);
+                        if (e.key === "Escape") resetForm();
+                      }}
+                      className="font-bold text-lg text-slate-800 bg-white border border-christmas-gold rounded px-2 py-1 focus:ring-2 focus:ring-christmas-gold outline-none"
+                      autoFocus
+                    />
+                    <button
+                      onClick={() => handleSaveGroupName(group.id)}
+                      className="text-christmas-green hover:text-green-700 text-sm font-medium"
+                    >
+                      Speichern
+                    </button>
+                    <button
+                      onClick={resetForm}
+                      className="text-slate-400 hover:text-slate-600 text-sm"
+                    >
+                      Abbrechen
+                    </button>
+                  </div>
+                ) : (
+                  <div
+                    className="group/name cursor-pointer"
+                    onClick={() => startEditGroupName(group)}
+                  >
+                    <h3 className="font-bold text-lg text-slate-800 flex items-center gap-2">
+                      {group.name}
+                      <Pencil className="w-3.5 h-3.5 text-slate-300 opacity-0 group-hover/name:opacity-100 transition-opacity" />
+                    </h3>
+                  </div>
+                )}
                 <p className="text-xs text-slate-500">
                   {group.members.length} Mitglieder
                 </p>
@@ -1000,32 +1099,121 @@ const App = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {group.members.map((member) => (
-                <div
-                  key={member.id}
-                  className="flex items-center gap-3 p-3 rounded-lg border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-sm transition"
-                >
-                  <MemberAvatar avatar={member.avatar} />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start">
-                      <p className="font-semibold text-slate-900 truncate text-sm">
-                        {member.name}
-                      </p>
+              {group.members.map((member) =>
+                editingMemberId === member.id ? (
+                  <div
+                    key={member.id}
+                    className="p-4 rounded-lg border-2 border-christmas-gold bg-white col-span-1 md:col-span-2 lg:col-span-3"
+                  >
+                    <div className="flex justify-between items-center mb-4">
+                      <h4 className="text-sm font-bold text-slate-700">
+                        Mitglied bearbeiten
+                      </h4>
                       <button
-                        onClick={() => removeMember(group.id, member.id)}
-                        className="text-slate-300 hover:text-red-500"
+                        onClick={resetForm}
+                        className="text-slate-400 hover:text-slate-600"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <X className="w-4 h-4" />
                       </button>
                     </div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="font-mono bg-white px-1.5 py-0.5 rounded border border-slate-200 text-slate-700 text-xs">
-                        #{member.number}
-                      </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-3">
+                        <input
+                          placeholder="Name (z.B. Oma)"
+                          className="w-full text-sm p-2 border rounded focus:ring-2 focus:ring-christmas-gold outline-none bg-white text-slate-900 placeholder:text-slate-400"
+                          value={newName}
+                          onChange={(e) => setNewName(e.target.value)}
+                          autoFocus
+                        />
+                        <input
+                          placeholder="Losnummer (z.B. 1234)"
+                          className="w-full text-sm p-2 border rounded focus:ring-2 focus:ring-christmas-gold outline-none bg-white text-slate-900 placeholder:text-slate-400"
+                          value={newNumber}
+                          onChange={(e) => setNewNumber(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-xs font-semibold text-slate-500 mb-2 block">
+                            Avatar wählen
+                          </label>
+                          <div className="flex gap-2 flex-wrap">
+                            {CHRISTMAS_AVATARS.map((avatar) => (
+                              <button
+                                key={avatar}
+                                onClick={() => setSelectedAvatar(avatar)}
+                                className={`w-12 h-12 flex items-center justify-center text-2xl rounded-full border shadow-sm transition-transform bg-slate-50 hover:bg-white
+                                  ${
+                                    selectedAvatar === avatar
+                                      ? "ring-2 ring-christmas-red scale-110 border-christmas-red"
+                                      : "border-slate-200"
+                                  }
+                                `}
+                              >
+                                {avatar}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="pt-4 flex gap-2">
+                      <button
+                        onClick={() => handleEditMember(group.id, member.id)}
+                        className="flex-1 bg-christmas-green text-white text-sm py-2 rounded-lg hover:bg-green-700 font-medium shadow-sm"
+                      >
+                        Speichern
+                      </button>
+                      <button
+                        onClick={resetForm}
+                        className="flex-1 bg-slate-100 text-slate-600 text-sm py-2 rounded-lg hover:bg-slate-200"
+                      >
+                        Abbrechen
+                      </button>
                     </div>
                   </div>
-                </div>
-              ))}
+                ) : (
+                  <div
+                    key={member.id}
+                    className="flex items-center gap-3 p-3 rounded-lg border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-sm transition cursor-pointer group/member"
+                    onClick={() => startEditMember(member)}
+                  >
+                    <MemberAvatar avatar={member.avatar} className="w-12 h-12 text-2xl" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start">
+                        <p className="font-semibold text-slate-900 truncate text-sm">
+                          {member.name}
+                        </p>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              startEditMember(member);
+                            }}
+                            className="text-slate-300 hover:text-christmas-green opacity-0 group-hover/member:opacity-100 transition-opacity"
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeMember(group.id, member.id);
+                            }}
+                            className="text-slate-300 hover:text-red-500"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="font-mono bg-white px-1.5 py-0.5 rounded border border-slate-200 text-slate-700 text-xs">
+                          #{member.number}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )
+              )}
 
               <div
                 className={`rounded-lg border-2 border-dashed border-slate-200 overflow-hidden transition-all ${
@@ -1075,7 +1263,7 @@ const App = () => {
                               <button
                                 key={avatar}
                                 onClick={() => setSelectedAvatar(avatar)}
-                                className={`w-10 h-10 flex items-center justify-center text-xl rounded-full border shadow-sm transition-transform bg-slate-50 hover:bg-white
+                                className={`w-12 h-12 flex items-center justify-center text-2xl rounded-full border shadow-sm transition-transform bg-slate-50 hover:bg-white
                                   ${
                                     selectedAvatar === avatar
                                       ? "ring-2 ring-christmas-red scale-110 border-christmas-red"
@@ -1090,7 +1278,7 @@ const App = () => {
                         </div>
 
                         <div className="flex items-center gap-3 p-2 bg-slate-50 rounded border border-slate-100 mt-2">
-                          <MemberAvatar avatar={selectedAvatar} />
+                          <MemberAvatar avatar={selectedAvatar} className="w-12 h-12 text-2xl" />
                           <span className="text-xs text-slate-400">
                             Vorschau
                           </span>
