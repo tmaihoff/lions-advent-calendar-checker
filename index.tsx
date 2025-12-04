@@ -51,16 +51,26 @@ const LIONS_URL =
   "https://www.lionsclub-badduerkheim.de/adventskalender/gewinne-2025";
 
 const CHRISTMAS_AVATARS = [
-  "🎅",
-  "🤶",
-  "🦌",
-  "⛄",
-  "🍪",
-  "🎄",
-  "🎁",
-  "🔔",
-  "🕯️",
-  "👼",
+  "🎅",  // Santa
+  "🤶",  // Mrs. Claus
+  "🦌",  // Reindeer
+  "⛄",  // Snowman
+  "🎄",  // Christmas Tree
+  "🎁",  // Gift
+  "👼",  // Angel
+  "🕯️", // Candle
+  "⭐",  // Star
+  "❄️",  // Snowflake
+  "🔔",  // Bell
+  "🍪",  // Cookie
+  "🧦",  // Stocking
+  "🛷",  // Sled
+  "🎿",  // Skis
+  "☃️",  // Snowman with snow
+  "🌟",  // Glowing star
+  "🍬",  // Candy
+  "🧣",  // Scarf
+  "🎶",  // Music notes (carols)
 ];
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
@@ -79,10 +89,16 @@ const INITIAL_GROUPS: Group[] = [
 // --- Services ---
 
 const UrlService = {
+  // Compact format: name~number~avatar|name~number~avatar
+  // Much shorter than JSON + Base64
   serialize: (groups: Group[]): string => {
     try {
-      const json = JSON.stringify(groups);
-      return btoa(encodeURIComponent(json));
+      const members = groups.flatMap((g) => g.members);
+      // Format: name~number~avatar|name~number~avatar
+      const compact = members
+        .map((m) => `${m.name}~${m.number}~${m.avatar}`)
+        .join("|");
+      return encodeURIComponent(compact);
     } catch (e) {
       console.error("Failed to serialize", e);
       return "";
@@ -91,13 +107,29 @@ const UrlService = {
   deserialize: (hash: string): Group[] | null => {
     try {
       if (!hash || !hash.startsWith("#data=")) return null;
-      const base64 = hash.replace("#data=", "");
-      const json = decodeURIComponent(atob(base64));
-      // Basic migration for old data structure if needed, or just let it fail safely
+      const data = hash.replace("#data=", "");
+
+      // Try new compact format first
+      const decoded = decodeURIComponent(data);
+      if (decoded.includes("~")) {
+        // New compact format: name~number~avatar|name~number~avatar
+        const memberStrings = decoded.split("|").filter(Boolean);
+        const members: Member[] = memberStrings.map((str) => {
+          const [name, number, avatar] = str.split("~");
+          return {
+            id: generateId(),
+            name: name || "Unbekannt",
+            number: number || "0000",
+            avatar: avatar || "🎅",
+          };
+        });
+        return [{ id: "g1", name: "Meine Familie", members }];
+      }
+
+      // Fallback: try old Base64 JSON format for backwards compatibility
+      const json = decodeURIComponent(atob(data));
       const parsed = JSON.parse(json);
-      // Validate structure roughly
       if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].members) {
-        // Map old members to new structure if avatar is missing
         parsed.forEach((g: any) => {
           g.members.forEach((m: any) => {
             if (!m.avatar) m.avatar = "🎅";
@@ -820,6 +852,75 @@ const App = () => {
           )}
         </div>
       </div>
+
+      {/* Wins Section - Only shown if there are wins */}
+      {(() => {
+        const allMembers = groups.flatMap((g) => g.members);
+        const allWins: { day: number; member: Member; prize: string; sponsor: string }[] = [];
+
+        dayData.forEach((dd) => {
+          dd.winGroups.forEach((wg) => {
+            wg.numbers.forEach((num) => {
+              const winner = allMembers.find((m) => m.number === num);
+              if (winner) {
+                allWins.push({
+                  day: dd.day,
+                  member: winner,
+                  prize: wg.prize,
+                  sponsor: wg.sponsor,
+                });
+              }
+            });
+          });
+        });
+
+        if (allWins.length === 0) return null;
+
+        return (
+          <div className="bg-amber-50 p-4 rounded-xl shadow-md border border-amber-400 ring-2 ring-amber-200 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-100/50 via-transparent to-transparent pointer-events-none" />
+            <div className="relative z-10">
+              <h3 className="font-bold text-amber-800 flex items-center gap-2 mb-3">
+                <Trophy className="w-5 h-5 text-amber-500 fill-amber-500" />
+                Gewinne
+                <span className="text-xs bg-amber-200 text-amber-700 px-2 py-0.5 rounded-full font-medium">
+                  {allWins.length}
+                </span>
+              </h3>
+              <div className="space-y-2">
+                {allWins.map((win, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-3 bg-white/80 rounded-lg p-3 border border-amber-200"
+                  >
+                    <div className="flex items-center justify-center w-8 h-8 bg-amber-100 rounded-full text-amber-700 font-bold text-sm font-serif">
+                      {win.day}
+                    </div>
+                    <MemberAvatar
+                      avatar={win.member.avatar}
+                      className="w-8 h-8 text-lg border border-amber-300 bg-white"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-amber-800 text-sm">
+                          {win.member.name}
+                        </span>
+                        <span className="text-xs font-mono bg-amber-500 text-white px-1.5 py-0.5 rounded">
+                          #{win.member.number}
+                        </span>
+                      </div>
+                      <p className="text-xs text-amber-700 truncate">{win.prize}</p>
+                      <p className="text-[10px] text-amber-500 uppercase tracking-wider truncate">
+                        {win.sponsor}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Calendar Grid */}
       <div>
