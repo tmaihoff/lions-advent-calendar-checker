@@ -295,7 +295,7 @@ const DayCard: React.FC<{
             ? "bg-amber-50 border-amber-400 ring-2 ring-amber-200 shadow-md transform scale-105 z-10"
             : data
             ? "bg-white border-slate-200 hover:border-christmas-red/30 hover:shadow-md"
-            : "bg-slate-50 border-slate-100 opacity-60"
+            : "bg-slate-50 border-slate-200"
         }
       `}
     >
@@ -411,8 +411,8 @@ const DayCard: React.FC<{
         </div>
       ) : (
         /* Empty State */
-        <div className="mt-auto flex justify-center pb-2 opacity-30">
-          <Gift className="w-6 h-6 text-slate-300" />
+        <div className="mt-auto flex justify-center pb-2">
+          <Gift className="w-6 h-6 text-slate-400" />
         </div>
       )}
 
