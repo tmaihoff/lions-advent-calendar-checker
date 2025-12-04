@@ -583,6 +583,15 @@ const AppV2 = () => {
   const [initialCheckDone, setInitialCheckDone] = useState(false);
   const [scrollY, setScrollY] = useState(0);
 
+  // Groups editing state (lifted up to prevent reset on scroll)
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
+  const [editingGroupName, setEditingGroupName] = useState<string | null>(null);
+  const [groupNameInput, setGroupNameInput] = useState("");
+  const [newMemberName, setNewMemberName] = useState("");
+  const [newMemberNumber, setNewMemberNumber] = useState("");
+  const [selectedAvatar, setSelectedAvatar] = useState("🎅");
+
   // Track scroll position for parallax effect
   useEffect(() => {
     const handleScroll = () => {
@@ -870,12 +879,14 @@ const AppV2 = () => {
                       ? lastChecked.toLocaleTimeString()
                       : "Noch nie"}
                   </span>
-                  {dataSource === "real" && (
-                    <span className="text-xs bg-christmas-green/20 text-christmas-green px-2.5 py-1 rounded-full font-semibold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 bg-christmas-green rounded-full animate-pulse"></span>
-                      Live
-                    </span>
-                  )}
+                  {dataSource === "real" &&
+                    lastChecked &&
+                    Date.now() - lastChecked.getTime() < 15 * 60 * 1000 && (
+                      <span className="text-xs bg-christmas-green/20 text-christmas-green px-2.5 py-1 rounded-full font-semibold flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 bg-christmas-green rounded-full animate-pulse"></span>
+                        Live
+                      </span>
+                    )}
                   {dataSource === "simulated" && (
                     <span className="text-xs bg-christmas-gold/20 text-amber-700 px-2.5 py-1 rounded-full font-semibold">
                       🎭 Demo
@@ -921,7 +932,7 @@ const AppV2 = () => {
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-display font-bold text-slate-800 flex items-center gap-2">
             <Users className="w-5 h-5 text-christmas-green" />
-            🎄 Meine Gruppe
+            🎄 {groups[0]?.name || "Meine Gruppe"}
           </h3>
           <button
             onClick={() => setActiveTab("groups")}
@@ -987,7 +998,21 @@ const AppV2 = () => {
           });
         });
 
-        if (allWins.length === 0) return null;
+        if (allWins.length === 0) {
+          return (
+            <CardV2 className="p-6 border-christmas-green/20" hover={false}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-display font-bold text-slate-800 flex items-center gap-2">
+                  <Trophy className="w-5 h-5 text-christmas-gold" />
+                  🏆 Gewinne
+                </h3>
+              </div>
+              <p className="text-slate-500 text-sm">
+                Noch keine Gewinne – viel Glück beim nächsten Türchen!
+              </p>
+            </CardV2>
+          );
+        }
 
         return (
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gold-50 via-gold-100/50 to-gold-50 p-6 border-2 border-gold-200 shadow-glow-gold">
@@ -1061,22 +1086,14 @@ const AppV2 = () => {
 
   // --- V2 Groups View ---
   const GroupsViewV2 = () => {
-    const [editingId, setEditingId] = useState<string | null>(null);
-    const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
-    const [editingGroupName, setEditingGroupName] = useState<string | null>(
-      null
-    );
-    const [groupNameInput, setGroupNameInput] = useState("");
-    const [newName, setNewName] = useState("");
-    const [newNumber, setNewNumber] = useState("");
-    const [selectedAvatar, setSelectedAvatar] = useState("🎅");
+    // State is lifted to AppV2 to prevent reset on scroll
 
     const handleAddMember = (groupId: string) => {
-      if (!newName || !newNumber) return;
+      if (!newMemberName || !newMemberNumber) return;
       const member: Member = {
         id: generateId(),
-        name: newName,
-        number: newNumber,
+        name: newMemberName,
+        number: newMemberNumber,
         avatar: selectedAvatar,
       };
       setGroups(
@@ -1088,7 +1105,7 @@ const AppV2 = () => {
     };
 
     const handleEditMember = (groupId: string, memberId: string) => {
-      if (!newName || !newNumber) return;
+      if (!newMemberName || !newMemberNumber) return;
       setGroups(
         groups.map((g) =>
           g.id === groupId
@@ -1098,8 +1115,8 @@ const AppV2 = () => {
                   m.id === memberId
                     ? {
                         ...m,
-                        name: newName,
-                        number: newNumber,
+                        name: newMemberName,
+                        number: newMemberNumber,
                         avatar: selectedAvatar,
                       }
                     : m
@@ -1113,14 +1130,14 @@ const AppV2 = () => {
 
     const startEditMember = (member: Member) => {
       setEditingMemberId(member.id);
-      setNewName(member.name);
-      setNewNumber(member.number);
+      setNewMemberName(member.name);
+      setNewMemberNumber(member.number);
       setSelectedAvatar(member.avatar);
     };
 
     const resetForm = () => {
-      setNewName("");
-      setNewNumber("");
+      setNewMemberName("");
+      setNewMemberNumber("");
       setEditingId(null);
       setEditingMemberId(null);
       setEditingGroupName(null);
@@ -1236,8 +1253,8 @@ const AppV2 = () => {
                           <input
                             placeholder="z.B. Oma"
                             className="w-full text-sm p-3 border-2 border-surface-200 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-300 outline-none bg-white text-surface-900 placeholder:text-surface-400"
-                            value={newName}
-                            onChange={(e) => setNewName(e.target.value)}
+                            value={newMemberName}
+                            onChange={(e) => setNewMemberName(e.target.value)}
                             autoFocus
                           />
                         </div>
@@ -1248,8 +1265,8 @@ const AppV2 = () => {
                           <input
                             placeholder="z.B. 1234"
                             className="w-full text-sm p-3 border-2 border-surface-200 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-300 outline-none bg-white text-surface-900 placeholder:text-surface-400 font-mono"
-                            value={newNumber}
-                            onChange={(e) => setNewNumber(e.target.value)}
+                            value={newMemberNumber}
+                            onChange={(e) => setNewMemberNumber(e.target.value)}
                           />
                         </div>
                       </div>
@@ -1365,8 +1382,8 @@ const AppV2 = () => {
                           <input
                             placeholder="z.B. Oma"
                             className="w-full text-sm p-3 border-2 border-surface-200 rounded-xl focus:ring-2 focus:ring-accent-200 focus:border-accent-300 outline-none bg-white text-surface-900 placeholder:text-surface-400"
-                            value={newName}
-                            onChange={(e) => setNewName(e.target.value)}
+                            value={newMemberName}
+                            onChange={(e) => setNewMemberName(e.target.value)}
                             autoFocus
                           />
                         </div>
@@ -1377,8 +1394,8 @@ const AppV2 = () => {
                           <input
                             placeholder="z.B. 1234"
                             className="w-full text-sm p-3 border-2 border-surface-200 rounded-xl focus:ring-2 focus:ring-accent-200 focus:border-accent-300 outline-none bg-white text-surface-900 placeholder:text-surface-400 font-mono"
-                            value={newNumber}
-                            onChange={(e) => setNewNumber(e.target.value)}
+                            value={newMemberNumber}
+                            onChange={(e) => setNewMemberNumber(e.target.value)}
                           />
                         </div>
                       </div>
@@ -1492,7 +1509,8 @@ const AppV2 = () => {
 
       <footer className="text-center text-surface-400 text-sm py-10 border-t border-surface-200 mt-10 max-w-6xl mx-auto px-6">
         <p>
-          Lions Club Checker Tool • Nicht verbunden mit Lions Club Bad Dürkheim
+          Lions Club Adventskalender Checker Tool • Nicht verbunden mit Lions
+          Club Bad Dürkheim
         </p>
         <a
           href={LIONS_URL}
