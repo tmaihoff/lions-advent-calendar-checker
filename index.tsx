@@ -875,6 +875,7 @@ const App = () => {
         >
           Offiziellen Kalender besuchen <ExternalLink className="w-3 h-3" />
         </a>
+        <p className="mt-4">Tobias Maihoff • <a href="mailto:tobiasmaihoff@gmail.com" className="hover:underline">Kontakt</a></p>
       </footer>
     </div>
   );
