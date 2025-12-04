@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
-import { 
-  Users, 
-  Calendar, 
-  Gift, 
-  Bell, 
-  Plus, 
-  Trash2, 
+import {
+  Users,
+  Calendar,
+  Gift,
+  Plus,
+  Trash2,
   AlertCircle,
   RefreshCw,
   Share2,
@@ -44,12 +43,6 @@ interface DayData {
   winGroups: WinGroup[];
 }
 
-interface NotificationLog {
-  id: string;
-  timestamp: number;
-  message: string;
-  type: 'win' | 'info';
-}
 
 // --- Constants & Utilities ---
 
@@ -65,10 +58,10 @@ const generateId = () => Math.random().toString(36).substr(2, 9);
 const INITIAL_GROUPS: Group[] = [
   {
     id: 'g1',
-    name: 'My Family',
+    name: 'Meine Familie',
     members: [
-      { id: 'm1', name: 'Dad', number: '1234', avatar: '🎅' },
-      { id: 'm2', name: 'Mom', number: '5678', avatar: '🤶' },
+      { id: 'm1', name: 'Papa', number: '1234', avatar: '🎅' },
+      { id: 'm2', name: 'Mama', number: '5678', avatar: '🤶' },
     ]
   }
 ];
@@ -149,8 +142,8 @@ const Header = () => (
           <Gift className="w-6 h-6 text-christmas-gold" />
         </div>
         <div>
-          <h1 className="text-xl font-serif font-bold leading-tight">Lions Advent Checker</h1>
-          <p className="text-xs text-red-100 opacity-90">Bad Dürkheim Edition</p>
+          <h1 className="text-xl font-serif font-bold leading-tight">Lions Adventskalender Checker</h1>
+          <p className="text-xs text-red-100 opacity-90">Bad Dürkheim Ausgabe</p>
         </div>
       </div>
       <div className="text-xs hidden sm:block bg-black/20 px-3 py-1 rounded-full">
@@ -255,15 +248,31 @@ const DayCard: React.FC<{
             : 'bg-slate-50 border-slate-100 opacity-60'}
       `}
     >
-      {/* Header: Day Number */}
+      {/* Header: Day Number and Winner */}
       <div className="flex justify-between items-start mb-2 z-20 relative">
         <span className={`text-xl font-serif font-bold ${overallWinners.length > 0 ? 'text-amber-700' : 'text-slate-400'}`}>
           {day}
         </span>
-        {isWinningSlide && <Trophy className="w-5 h-5 text-amber-500 fill-amber-500 animate-bounce" />}
-        {data && !isWinningSlide && overallWinners.length > 0 && (
-           <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" title="Win on another slide"></div>
-        )}
+        <div className="flex items-center gap-1">
+          {/* Winner avatars and names next to trophy */}
+          {isWinningSlide && winnersForCurrentSlide.length > 0 && (
+            <div className="flex items-center gap-1 mr-1">
+              {winnersForCurrentSlide.slice(0, 2).map(w => (
+                <div key={w.id} className="flex items-center gap-0.5">
+                  <MemberAvatar
+                    avatar={w.avatar}
+                    className="w-5 h-5 text-sm border border-amber-300 bg-white"
+                  />
+                  <span className="text-[9px] font-medium text-amber-700 max-w-[40px] truncate">{w.name}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          {isWinningSlide && <Trophy className="w-5 h-5 text-amber-500 fill-amber-500 animate-bounce" />}
+          {data && !isWinningSlide && overallWinners.length > 0 && (
+             <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" title="Gewinn auf anderer Folie"></div>
+          )}
+        </div>
       </div>
 
       {data ? (
@@ -312,19 +321,6 @@ const DayCard: React.FC<{
                </button>
             </div>
           )}
-
-          {/* Winner Avatars */}
-          {winnersForCurrentSlide.length > 0 && (
-            <div className="absolute -bottom-1 right-0 flex -space-x-2">
-              {winnersForCurrentSlide.map(w => (
-                <MemberAvatar 
-                  key={w.id} 
-                  avatar={w.avatar} 
-                  className="w-8 h-8 text-lg border-2 border-white shadow-sm bg-white" 
-                />
-              ))}
-            </div>
-          )}
         </div>
       ) : (
         /* Empty State */
@@ -347,12 +343,10 @@ const App = () => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'groups'>('dashboard');
   const [groups, setGroups] = useState<Group[]>([]);
   const [dayData, setDayData] = useState<DayData[]>([]);
-  const [notifications, setNotifications] = useState<NotificationLog[]>([]);
-  const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
   const [lastChecked, setLastChecked] = useState<Date | null>(null);
   const [dataSource, setDataSource] = useState<'real' | 'simulated' | 'none'>('none');
   const [scrapeError, setScrapeError] = useState<string | null>(null);
-  const [permission, setPermission] = useState<NotificationPermission>('default');
 
   // Load Data
   useEffect(() => {
@@ -367,10 +361,7 @@ const App = () => {
     const savedSource = localStorage.getItem('lions_data_source');
     if (savedSource) setDataSource(savedSource as any);
 
-    if ('Notification' in window) {
-      setPermission(Notification.permission);
-    }
-  }, []);
+    }, []);
 
   // Save Data
   useEffect(() => { StorageService.saveGroups(groups); }, [groups]);
@@ -379,40 +370,15 @@ const App = () => {
     if(dataSource) localStorage.setItem('lions_data_source', dataSource); 
   }, [dataSource]);
 
-  const requestNotify = useCallback(async () => {
-    if (!('Notification' in window)) {
-      alert("This browser does not support notifications.");
-      return;
-    }
-    try {
-      const result = await Notification.requestPermission();
-      setPermission(result);
-    } catch (e) {
-      console.error("Notification permission error", e);
-    }
-  }, []);
-
-  const sendNotification = (title: string, body: string) => {
-    if (permission === 'granted') {
-      try {
-        new Notification(title, {
-          body,
-          icon: 'https://cdn-icons-png.flaticon.com/512/614/614145.png' 
-        });
-      } catch (e) {
-        console.error("Notification send error", e);
-      }
-    }
-  };
-
+  
   const copyShareLink = () => {
     const serialized = UrlService.serialize(groups);
     const url = `${window.location.origin}${window.location.pathname}#data=${serialized}`;
     
     navigator.clipboard.writeText(url).then(() => {
-      alert("Link copied to clipboard! You can share this URL with your family.");
+      alert("Link in die Zwischenablage kopiert! Du kannst diese URL mit deiner Familie teilen.");
     }).catch(() => {
-      prompt("Copy this link to share:", url);
+      prompt("Kopiere diesen Link zum Teilen:", url);
     });
   };
 
@@ -548,8 +514,8 @@ const App = () => {
 
          winsForDay.push({
             numbers: numbers,
-            prize: `(Demo) ${['Wellness Voucher', 'Wine Box', 'Shopping Card', 'Dinner for Two'][p % 4]} €${(i * 5) + 20}`,
-            sponsor: ['Local Bakery', 'Wine Estate', 'Grand Hotel', 'Bookstore'][p % 4]
+            prize: `(Demo) ${['Wellness-Gutschein', 'Wein-Paket', 'Einkaufsgutschein', 'Dinner für Zwei'][p % 4]} €${(i * 5) + 20}`,
+            sponsor: ['Bäckerei am Markt', 'Weingut Müller', 'Grand Hotel', 'Buchhandlung'][p % 4]
          });
       }
       
@@ -564,7 +530,6 @@ const App = () => {
   const checkWebsite = async (forceSimulate = false) => {
     setLoading(true);
     setScrapeError(null);
-    const newNotifications: NotificationLog[] = [];
     let isSimulating = forceSimulate;
     let newDayData: DayData[] = [];
 
@@ -602,35 +567,7 @@ const App = () => {
       setLastChecked(new Date());
       localStorage.setItem('lions_last_check', new Date().toISOString());
 
-      // Check Matches & Notify
-      const allMembers = groups.flatMap(g => g.members);
-      newDayData.forEach(day => {
-         day.winGroups.forEach(group => {
-            const winningNumbers = group.numbers;
-            const winners = allMembers.filter(m => winningNumbers.includes(m.number));
-            winners.forEach(member => {
-               const winId = `${member.id}-${day.day}-${member.number}`;
-               const alreadyNotified = notifications.some(n => n.id === winId);
-               
-               if (!alreadyNotified) {
-                 const msg = `🎉 ${member.name} won on Day ${day.day}: ${group.prize}`;
-                 newNotifications.push({
-                   id: winId,
-                   timestamp: Date.now(),
-                   type: 'win',
-                   message: msg
-                 });
-                 sendNotification("Lions Club Win!", msg);
-               }
-            });
-         });
-      });
-
-      if (newNotifications.length > 0) {
-        setNotifications(prev => [...newNotifications, ...prev]);
-      }
-
-    } catch (err) {
+      } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
@@ -647,87 +584,80 @@ const App = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
              <div>
               <h2 className="font-bold text-slate-800 flex items-center gap-2">
-                <Bell className="w-5 h-5 text-christmas-red" />
-                Calendar Status
+                <Calendar className="w-5 h-5 text-christmas-red" />
+                Kalender Status
               </h2>
               <div className="flex flex-wrap items-center gap-2 mt-1">
                 <span className="text-sm text-slate-500">
-                  Last checked: {lastChecked ? lastChecked.toLocaleTimeString() : 'Never'}
+                  Zuletzt geprüft: {lastChecked ? lastChecked.toLocaleTimeString() : 'Noch nie'}
                 </span>
                 {dataSource === 'real' && (
                   <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium border border-green-200">
-                    Live Data
+                    Live-Daten
                   </span>
                 )}
                 {dataSource === 'simulated' && (
                   <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium border border-amber-200">
-                    Demo Mode
+                    Demo-Modus
                   </span>
                 )}
               </div>
               {scrapeError && dataSource === 'simulated' && (
                 <p className="text-xs text-amber-600 mt-2 flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" /> Note: {scrapeError}. Showing demo data.
+                  <AlertCircle className="w-3 h-3" /> Hinweis: {scrapeError}. Demo-Daten werden angezeigt.
                 </p>
               )}
             </div>
             
             <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-              {permission !== 'granted' && (
-                <button 
-                  onClick={requestNotify}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-white text-slate-600 border border-slate-300 px-3 py-2 rounded-lg hover:bg-slate-50 transition text-sm"
-                >
-                  <Bell className="w-4 h-4" /> Enable Alerts
-                </button>
-              )}
               <button 
                 onClick={() => checkWebsite(false)}
                 disabled={loading}
                 className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition disabled:opacity-50 shadow-sm"
               >
                 {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-                Check Now
+                Jetzt prüfen
               </button>
             </div>
           </div>
           
           <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
              <p className="text-xs text-slate-400">
-               <span className="font-semibold text-slate-600">Share your setup:</span> Copy the link below to share your groups.
+               <span className="font-semibold text-slate-600">Teile dein Setup:</span> Kopiere den Link, um deine Gruppen zu teilen.
              </p>
              <button onClick={copyShareLink} className="text-xs flex items-center gap-1 text-christmas-red font-medium hover:underline">
-               <Share2 className="w-3 h-3" /> Copy Link
+               <Share2 className="w-3 h-3" /> Link kopieren
              </button>
           </div>
         </div>
       </div>
 
-      {/* Notifications */}
-      {notifications.length > 0 && (
-        <div className="space-y-3 animate-in slide-in-from-top-4 duration-500">
-          <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Latest Wins</h3>
-          {notifications.slice(0, 3).map(n => (
-            <div key={n.id} className="p-4 rounded-lg flex gap-3 bg-amber-50 border border-amber-200 shadow-sm">
-              <div className="mt-1 p-1 rounded-full bg-amber-200 text-amber-700">
-                <Gift className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="text-slate-800 font-medium text-sm">{n.message}</p>
-                <p className="text-xs text-slate-500 mt-1">
-                  {new Date(n.timestamp).toLocaleTimeString()}
-                </p>
-              </div>
+      
+      {/* Members Overview */}
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+        <h3 className="font-bold text-slate-800 flex items-center gap-2 mb-3">
+          <Users className="w-5 h-5 text-christmas-red" />
+          Meine Gruppe
+        </h3>
+        <div className="flex flex-wrap gap-2">
+          {groups.flatMap(g => g.members).map(member => (
+            <div key={member.id} className="flex items-center gap-2 bg-slate-50 rounded-full pl-1 pr-3 py-1 border border-slate-200">
+              <MemberAvatar avatar={member.avatar} className="w-6 h-6 text-base border border-slate-200 bg-white" />
+              <span className="text-sm font-medium text-slate-700">{member.name}</span>
+              <span className="text-xs font-mono bg-white px-1.5 py-0.5 rounded border border-slate-200 text-slate-500">#{member.number}</span>
             </div>
           ))}
+          {groups.flatMap(g => g.members).length === 0 && (
+            <p className="text-sm text-slate-400">Noch keine Mitglieder hinzugefügt. Gehe zu "Mitglieder" um Losnummern einzutragen.</p>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Calendar Grid */}
       <div>
         <h3 className="text-xl font-serif font-bold text-slate-800 mb-4 flex items-center gap-2">
           <Calendar className="w-5 h-5 text-christmas-red" />
-          December 2025
+          Dezember 2025
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {Array.from({ length: 24 }, (_, i) => i + 1).map(day => {
@@ -753,12 +683,12 @@ const App = () => {
     const [selectedAvatar, setSelectedAvatar] = useState('🎅');
 
     const addGroup = () => {
-      const name = prompt("Enter new group name:");
+      const name = prompt("Name der neuen Gruppe eingeben:");
       if (name) setGroups([...groups, { id: generateId(), name, members: [] }]);
     };
 
     const deleteGroup = (id: string) => {
-      if (confirm("Delete group?")) setGroups(groups.filter(g => g.id !== id));
+      if (confirm("Gruppe löschen?")) setGroups(groups.filter(g => g.id !== id));
     };
 
     const handleAddMember = (groupId: string) => {
@@ -785,9 +715,9 @@ const App = () => {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-bold font-serif text-slate-800">Managed Groups</h2>
+          <h2 className="text-xl font-bold font-serif text-slate-800">Verwaltete Gruppen</h2>
           <button onClick={addGroup} className="flex items-center gap-2 text-sm bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800">
-            <Plus className="w-4 h-4" /> New Group
+            <Plus className="w-4 h-4" /> Neue Gruppe
           </button>
         </div>
 
@@ -800,7 +730,7 @@ const App = () => {
                 </div>
                 <div>
                   <h3 className="font-bold text-lg text-slate-800">{group.name}</h3>
-                  <p className="text-xs text-slate-500">{group.members.length} members</p>
+                  <p className="text-xs text-slate-500">{group.members.length} Mitglieder</p>
                 </div>
               </div>
               <button onClick={() => deleteGroup(group.id)} className="text-slate-300 hover:text-red-500 transition">
@@ -834,21 +764,21 @@ const App = () => {
                 {editingId === group.id ? (
                   <div className="p-4 space-y-4">
                     <div className="flex justify-between items-center">
-                      <h4 className="text-sm font-bold text-slate-700">Add New Member</h4>
+                      <h4 className="text-sm font-bold text-slate-700">Neues Mitglied hinzufügen</h4>
                       <button onClick={resetForm} className="text-slate-400 hover:text-slate-600"><Trash2 className="w-4 h-4"/></button>
                     </div>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-3">
                         <input 
-                          placeholder="Name (e.g. Grandma)" 
+                          placeholder="Name (z.B. Oma)" 
                           className="w-full text-sm p-2 border rounded focus:ring-2 focus:ring-christmas-gold outline-none bg-white text-slate-900 placeholder:text-slate-400"
                           value={newName}
                           onChange={e => setNewName(e.target.value)}
                           autoFocus
                         />
                         <input 
-                          placeholder="Ticket Number (e.g. 1234)" 
+                          placeholder="Losnummer (z.B. 1234)" 
                           className="w-full text-sm p-2 border rounded focus:ring-2 focus:ring-christmas-gold outline-none bg-white text-slate-900 placeholder:text-slate-400"
                           value={newNumber}
                           onChange={e => setNewNumber(e.target.value)}
@@ -857,7 +787,7 @@ const App = () => {
 
                       <div className="space-y-3">
                         <div>
-                          <label className="text-xs font-semibold text-slate-500 mb-2 block">Choose Avatar</label>
+                          <label className="text-xs font-semibold text-slate-500 mb-2 block">Avatar wählen</label>
                           <div className="flex gap-2 flex-wrap">
                             {CHRISTMAS_AVATARS.map(avatar => (
                               <button
@@ -875,24 +805,24 @@ const App = () => {
 
                         <div className="flex items-center gap-3 p-2 bg-slate-50 rounded border border-slate-100 mt-2">
                            <MemberAvatar avatar={selectedAvatar} />
-                           <span className="text-xs text-slate-400">Preview</span>
+                           <span className="text-xs text-slate-400">Vorschau</span>
                         </div>
                       </div>
                     </div>
 
                     <div className="pt-2 flex gap-2">
                       <button onClick={() => handleAddMember(group.id)} className="flex-1 bg-green-600 text-white text-sm py-2 rounded-lg hover:bg-green-700 font-medium shadow-sm">
-                        Save Member
+                        Mitglied speichern
                       </button>
                       <button onClick={resetForm} className="flex-1 bg-slate-100 text-slate-600 text-sm py-2 rounded-lg hover:bg-slate-200">
-                        Cancel
+                        Abbrechen
                       </button>
                     </div>
                   </div>
                 ) : (
                   <button onClick={() => setEditingId(group.id)} className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-1 py-4">
                     <Plus className="w-6 h-6" />
-                    <span className="text-xs font-medium">Add Member</span>
+                    <span className="text-xs font-medium">Mitglied hinzufügen</span>
                   </button>
                 )}
               </div>
@@ -911,8 +841,8 @@ const App = () => {
         <div className="flex justify-center mb-8">
            <div className="flex space-x-1 bg-white p-1 rounded-xl shadow-sm border border-slate-200 w-full max-w-sm">
             {[
-              { id: 'dashboard', label: 'Calendar', icon: Calendar },
-              { id: 'groups', label: 'Members', icon: Users },
+              { id: 'dashboard', label: 'Kalender', icon: Calendar },
+              { id: 'groups', label: 'Mitglieder', icon: Users },
             ].map(tab => (
               <button
                 key={tab.id}
@@ -936,14 +866,14 @@ const App = () => {
       </main>
 
       <footer className="text-center text-slate-400 text-xs py-8 border-t border-slate-200 mt-8 mx-4">
-        <p>Lions Club Checker Tool • Not affiliated with Lions Club Bad Dürkheim</p>
-        <a 
-          href={LIONS_URL} 
-          target="_blank" 
+        <p>Lions Club Checker Tool • Nicht verbunden mit Lions Club Bad Dürkheim</p>
+        <a
+          href={LIONS_URL}
+          target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1 mt-2 text-christmas-red hover:underline font-medium"
         >
-          Visit Official Calendar <ExternalLink className="w-3 h-3" />
+          Offiziellen Kalender besuchen <ExternalLink className="w-3 h-3" />
         </a>
       </footer>
     </div>
