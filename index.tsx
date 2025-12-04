@@ -238,7 +238,7 @@ const HeaderV2 = ({ scrollY }: { scrollY: number }) => {
   const logoRadius = logoSize / 2; // 101px
 
   // Header heights
-  const headerHeightMin = 119; // Final/minimum header height (0.85 factor)
+  const headerHeightMin = 0; // Final/minimum header height (0.85 factor)
   const headerHeightMax = 224; // Starting header height (1.6x, ~80% of previous 2x)
   const headerShrinkRange = headerHeightMax - headerHeightMin; // 84px of shrinking
 
@@ -264,7 +264,8 @@ const HeaderV2 = ({ scrollY }: { scrollY: number }) => {
   const headerOpacity = Math.max(0, 1 - scrollY / 400);
 
   // Extra padding that shrinks as header shrinks
-  const extraPadding = (1 - shrinkProgress) * 84; // 84px extra at start, 0 at end
+  // 126px extra when expanded (so 40 + 126 = 166), shrinks to 0 (so 40px collapsed)
+  const extraPadding = (1 - shrinkProgress) * 126;
 
   return (
     <>
@@ -287,7 +288,7 @@ const HeaderV2 = ({ scrollY }: { scrollY: number }) => {
         <div
           className="max-w-6xl mx-auto px-6 pt-6 relative overflow-hidden"
           style={{
-            paddingBottom: `${96 + extraPadding}px`, // pb-24 = 96px base + extra
+            paddingBottom: `${40 + extraPadding}px`, // 40px collapsed, expands with extraPadding
           }}
         >
           {/* Centered content - scrolls up and fades out */}
@@ -1457,7 +1458,7 @@ const AppV2 = () => {
       <HeaderV2 scrollY={scrollY} />
 
       {/* Spacer for fixed header + logo (header starts at 2x height = 280px + logo overhang) */}
-      <div style={{ height: "440px" }}></div>
+      <div style={{ height: "400px" }}></div>
 
       {/* Main content - scrolls faster than header (at normal speed) */}
       <main className="max-w-6xl mx-auto px-6 pt-4 pb-10 w-full flex-1 relative z-20">
