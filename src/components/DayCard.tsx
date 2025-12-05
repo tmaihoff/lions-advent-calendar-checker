@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Trophy, Gift } from "lucide-react";
 import type { DayData, Group, Member, WinGroup } from "../types";
 import { getSpecialDayDecoration } from "../services";
 import { MemberAvatar } from "./MemberAvatar";
+import { DayDetailDialog } from "./DayDetailDialog";
 
 interface DayCardProps {
   day: number;
@@ -12,6 +13,7 @@ interface DayCardProps {
 
 export const DayCard = memo<DayCardProps>(({ day, data, groups }) => {
   const [slideIndex, setSlideIndex] = useState(0);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const specialDecoration = getSpecialDayDecoration(day);
 
   const allMembers = useMemo(
@@ -88,14 +90,16 @@ export const DayCard = memo<DayCardProps>(({ day, data, groups }) => {
   const isWinner = overallWinners.length > 0;
 
   return (
+    <>
     <div
-      className={`relative min-h-[180px] p-4 rounded-2xl border-2 transition-all duration-300 flex flex-col group overflow-hidden
+      onClick={() => setIsDialogOpen(true)}
+      className={`relative min-h-[180px] p-4 rounded-2xl border-2 transition-all duration-300 flex flex-col group overflow-hidden cursor-pointer
         ${
           isWinner
             ? "bg-gradient-to-br from-christmas-gold/20 to-amber-50 border-christmas-gold shadow-glow-gold transform scale-[1.02] z-10"
             : data
             ? "bg-white border-christmas-green/20 hover:border-christmas-red/30 hover:shadow-soft"
-            : "bg-christmas-cream/50 border-christmas-green/10 border-dashed"
+            : "bg-christmas-cream/50 border-christmas-green/10 border-dashed hover:border-christmas-green/20"
         }
       `}
     >
@@ -228,6 +232,16 @@ export const DayCard = memo<DayCardProps>(({ day, data, groups }) => {
         </div>
       )}
     </div>
+
+    {isDialogOpen && (
+      <DayDetailDialog
+        day={day}
+        data={data}
+        groups={groups}
+        onClose={() => setIsDialogOpen(false)}
+      />
+    )}
+    </>
   );
 });
 
