@@ -5,8 +5,8 @@ import {
   Plus,
   AlertCircle,
   RefreshCw,
-  QrCode,
   Trophy,
+  Share2,
 } from "lucide-react";
 import type { Group, DayData, DataSource, WinEntry } from "../types";
 import { LIVE_INDICATOR_DURATION } from "../constants";
@@ -22,8 +22,8 @@ interface DashboardProps {
   scrapeError: string | null;
   loading: boolean;
   onCheck: () => void;
-  onShowQr: () => void;
   onNavigateToGroups: () => void;
+  onShowQr: () => void;
 }
 
 export const Dashboard = memo<DashboardProps>(
@@ -35,8 +35,8 @@ export const Dashboard = memo<DashboardProps>(
     scrapeError,
     loading,
     onCheck,
-    onShowQr,
     onNavigateToGroups,
+    onShowQr,
   }) => {
     const allMembers = useMemo(
       () => groups.flatMap((g) => g.members),
@@ -127,13 +127,6 @@ export const Dashboard = memo<DashboardProps>(
                 />
                 Jetzt prüfen
               </button>
-              <button
-                onClick={onShowQr}
-                className="flex items-center gap-2 bg-christmas-red/10 text-christmas-red px-4 py-2.5 rounded-xl hover:bg-christmas-red/20 transition btn-press font-medium"
-              >
-                <QrCode className="w-4 h-4" />
-                Teilen
-              </button>
             </div>
           </div>
         </Card>
@@ -179,6 +172,17 @@ export const Dashboard = memo<DashboardProps>(
               </button>
             )}
           </div>
+          {allMembers.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-christmas-green/10">
+              <button
+                onClick={onShowQr}
+                className="flex items-center gap-2 text-sm text-slate-400 hover:text-christmas-green transition"
+              >
+                <Share2 className="w-4 h-4" />
+                Gruppe teilen
+              </button>
+            </div>
+          )}
         </Card>
 
         {/* Wins Section */}

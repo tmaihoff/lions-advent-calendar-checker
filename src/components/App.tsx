@@ -213,8 +213,8 @@ export const App: React.FC = () => {
               scrapeError={scrapeError}
               loading={loading}
               onCheck={handleCheck}
-              onShowQr={handleShowQr}
               onNavigateToGroups={handleNavigateToGroups}
+              onShowQr={handleShowQr}
             />
           ) : (
             <GroupsView
@@ -234,6 +234,7 @@ export const App: React.FC = () => {
               onSetNewMemberName={handleSetNewMemberName}
               onSetNewMemberNumber={handleSetNewMemberNumber}
               onSetSelectedAvatar={handleSetSelectedAvatar}
+              onShowQr={handleShowQr}
             />
           )}
         </div>

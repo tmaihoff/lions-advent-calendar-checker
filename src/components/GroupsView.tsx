@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useState } from "react";
-import { Users, Plus, Trash2, X, Pencil, Sparkles } from "lucide-react";
+import { Users, Plus, Trash2, X, Pencil, Sparkles, QrCode, Share2 } from "lucide-react";
 import type { Group, Member, Wichtel } from "../types";
 import { CHRISTMAS_AVATARS, WICHTEL_AVATARS, FEATURE_FLAGS } from "../constants";
 import { generateId } from "../services";
@@ -23,6 +23,7 @@ interface GroupsViewProps {
   onSetNewMemberName: (val: string) => void;
   onSetNewMemberNumber: (val: string) => void;
   onSetSelectedAvatar: (val: string) => void;
+  onShowQr: () => void;
 }
 
 export const GroupsView = memo<GroupsViewProps>(
@@ -43,6 +44,7 @@ export const GroupsView = memo<GroupsViewProps>(
     onSetNewMemberName,
     onSetNewMemberNumber,
     onSetSelectedAvatar,
+    onShowQr,
   }) => {
     const resetForm = useCallback(() => {
       onSetNewMemberName("");
@@ -470,6 +472,35 @@ export const GroupsView = memo<GroupsViewProps>(
             )}
           </Card>
         ))}
+
+        {/* Share Section */}
+        <Card className="p-6" hover={false}>
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-accent-100 to-accent-50 rounded-xl flex items-center justify-center">
+              <Share2 className="w-6 h-6 text-accent-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-display font-bold text-lg text-surface-800">
+                Gruppe teilen
+              </h3>
+              <p className="text-sm text-surface-500">
+                Teile deine Gruppendaten mit Familie und Freunden
+              </p>
+            </div>
+          </div>
+          <div className="bg-surface-50 rounded-xl p-4 border border-surface-100">
+            <p className="text-sm text-surface-600 mb-4">
+              Teile deine Mitgliederliste mit Familie oder Freunden. Die Daten werden einmalig übernommen – danach hat jeder seine eigene Kopie.
+            </p>
+            <button
+              onClick={onShowQr}
+              className="flex items-center gap-2 bg-gradient-to-r from-accent-500 to-accent-600 text-white px-5 py-2.5 rounded-xl hover:from-accent-600 hover:to-accent-700 transition shadow-md btn-press font-medium"
+            >
+              <QrCode className="w-4 h-4" />
+              Link & QR-Code erstellen
+            </button>
+          </div>
+        </Card>
       </div>
     );
   }
