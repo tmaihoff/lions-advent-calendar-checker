@@ -1255,7 +1255,6 @@ const AppV2 = () => {
                             className="w-full text-sm p-3 border-2 border-surface-200 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-300 outline-none bg-white text-surface-900 placeholder:text-surface-400"
                             value={newMemberName}
                             onChange={(e) => setNewMemberName(e.target.value)}
-                            autoFocus
                           />
                         </div>
                         <div>
@@ -1384,7 +1383,6 @@ const AppV2 = () => {
                             className="w-full text-sm p-3 border-2 border-surface-200 rounded-xl focus:ring-2 focus:ring-accent-200 focus:border-accent-300 outline-none bg-white text-surface-900 placeholder:text-surface-400"
                             value={newMemberName}
                             onChange={(e) => setNewMemberName(e.target.value)}
-                            autoFocus
                           />
                         </div>
                         <div>
