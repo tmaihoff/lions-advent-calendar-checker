@@ -1,7 +1,7 @@
-import React, { memo, useCallback } from "react";
-import { Users, Plus, Trash2, X, Pencil } from "lucide-react";
-import type { Group, Member } from "../types";
-import { CHRISTMAS_AVATARS } from "../constants";
+import React, { memo, useCallback, useState } from "react";
+import { Users, Plus, Trash2, X, Pencil, Sparkles } from "lucide-react";
+import type { Group, Member, Wichtel } from "../types";
+import { CHRISTMAS_AVATARS, WICHTEL_AVATARS, FEATURE_FLAGS } from "../constants";
 import { generateId } from "../services";
 import { Card } from "./Card";
 import { MemberAvatar } from "./MemberAvatar";
@@ -460,6 +460,14 @@ export const GroupsView = memo<GroupsViewProps>(
                 )}
               </div>
             </div>
+
+            {/* Wichtel Section */}
+            {FEATURE_FLAGS.WICHTEL_ENABLED && (
+              <WichtelSection
+                group={group}
+                onSetGroups={onSetGroups}
+              />
+            )}
           </Card>
         ))}
       </div>
@@ -468,3 +476,261 @@ export const GroupsView = memo<GroupsViewProps>(
 );
 
 GroupsView.displayName = "GroupsView";
+
+// Wichtel Section Component
+interface WichtelSectionProps {
+  group: Group;
+  onSetGroups: (groups: Group[] | ((prev: Group[]) => Group[])) => void;
+}
+
+const WichtelSection = memo<WichtelSectionProps>(({ group, onSetGroups }) => {
+  const [isAdding, setIsAdding] = useState(false);
+  const [editingWichtelId, setEditingWichtelId] = useState<string | null>(null);
+  const [wichtelName, setWichtelName] = useState("");
+  const [wichtelAvatar, setWichtelAvatar] = useState("👶");
+
+  const resetForm = useCallback(() => {
+    setIsAdding(false);
+    setEditingWichtelId(null);
+    setWichtelName("");
+    setWichtelAvatar("👶");
+  }, []);
+
+  const handleAddWichtel = useCallback(() => {
+    if (!wichtelName.trim()) return;
+    const wichtel: Wichtel = {
+      id: generateId(),
+      name: wichtelName.trim(),
+      avatar: wichtelAvatar,
+    };
+    onSetGroups((prev) =>
+      prev.map((g) =>
+        g.id === group.id
+          ? { ...g, wichtel: [...(g.wichtel || []), wichtel] }
+          : g
+      )
+    );
+    resetForm();
+  }, [wichtelName, wichtelAvatar, group.id, onSetGroups, resetForm]);
+
+  const handleEditWichtel = useCallback(() => {
+    if (!wichtelName.trim() || !editingWichtelId) return;
+    onSetGroups((prev) =>
+      prev.map((g) =>
+        g.id === group.id
+          ? {
+              ...g,
+              wichtel: (g.wichtel || []).map((w) =>
+                w.id === editingWichtelId
+                  ? { ...w, name: wichtelName.trim(), avatar: wichtelAvatar }
+                  : w
+              ),
+            }
+          : g
+      )
+    );
+    resetForm();
+  }, [wichtelName, wichtelAvatar, editingWichtelId, group.id, onSetGroups, resetForm]);
+
+  const startEditWichtel = useCallback((wichtel: Wichtel) => {
+    setEditingWichtelId(wichtel.id);
+    setWichtelName(wichtel.name);
+    setWichtelAvatar(wichtel.avatar);
+  }, []);
+
+  const removeWichtel = useCallback(
+    (wichtelId: string) => {
+      onSetGroups((prev) =>
+        prev.map((g) =>
+          g.id === group.id
+            ? { ...g, wichtel: (g.wichtel || []).filter((w) => w.id !== wichtelId) }
+            : g
+        )
+      );
+    },
+    [group.id, onSetGroups]
+  );
+
+  const wichtelList = group.wichtel || [];
+
+  return (
+    <div className="mt-6 pt-6 border-t border-surface-100">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 bg-gradient-to-br from-gold-100 to-gold-50 rounded-xl flex items-center justify-center">
+          <Sparkles className="w-5 h-5 text-gold-600" />
+        </div>
+        <div>
+          <h4 className="font-display font-bold text-surface-700">Wichtel</h4>
+          <p className="text-xs text-surface-400">
+            Familienmitglieder ohne Losnummer (Babys, Haustiere, etc.)
+          </p>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-3">
+        {wichtelList.map((wichtel) =>
+          editingWichtelId === wichtel.id ? (
+            <div
+              key={wichtel.id}
+              className="w-full p-4 rounded-xl border-2 border-gold-300 bg-gold-50/30"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h5 className="font-semibold text-surface-700">Wichtel bearbeiten</h5>
+                <button onClick={resetForm} className="text-surface-400 hover:text-surface-600">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs font-bold text-surface-500 mb-2 block uppercase tracking-wider">
+                    Name
+                  </label>
+                  <input
+                    placeholder="z.B. Baby Emma, Hund Bello"
+                    className="w-full text-sm p-3 border-2 border-surface-200 rounded-xl focus:ring-2 focus:ring-gold-200 focus:border-gold-300 outline-none bg-white"
+                    value={wichtelName}
+                    onChange={(e) => setWichtelName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleEditWichtel();
+                      if (e.key === "Escape") resetForm();
+                    }}
+                    autoFocus
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-surface-500 mb-2 block uppercase tracking-wider">
+                    Avatar
+                  </label>
+                  <div className="flex gap-2 flex-wrap">
+                    {WICHTEL_AVATARS.map((avatar) => (
+                      <button
+                        key={avatar}
+                        onClick={() => setWichtelAvatar(avatar)}
+                        className={`w-10 h-10 flex items-center justify-center text-lg rounded-xl border-2 transition-all btn-press
+                          ${
+                            wichtelAvatar === avatar
+                              ? "ring-2 ring-gold-300 scale-110 border-gold-500 bg-white shadow-md"
+                              : "border-surface-200 bg-surface-50 hover:bg-white hover:border-surface-300"
+                          }
+                        `}
+                      >
+                        {avatar}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleEditWichtel}
+                    className="flex-1 bg-gradient-to-r from-gold-500 to-gold-600 text-white py-2.5 rounded-xl hover:from-gold-600 hover:to-gold-700 font-semibold shadow-md btn-press"
+                  >
+                    Speichern
+                  </button>
+                  <button
+                    onClick={resetForm}
+                    className="flex-1 bg-surface-100 text-surface-600 py-2.5 rounded-xl hover:bg-surface-200 font-medium btn-press"
+                  >
+                    Abbrechen
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div
+              key={wichtel.id}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl border-2 border-surface-100 bg-surface-50/50 hover:bg-white hover:border-gold-200 hover:shadow-soft transition cursor-pointer group/wichtel"
+              onClick={() => startEditWichtel(wichtel)}
+            >
+              <span className="text-2xl">{wichtel.avatar}</span>
+              <span className="font-medium text-surface-700 text-sm">{wichtel.name}</span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeWichtel(wichtel.id);
+                }}
+                className="text-surface-300 hover:text-brand-500 transition-all p-1 opacity-0 group-hover/wichtel:opacity-100"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )
+        )}
+
+        {isAdding ? (
+          <div className="w-full p-4 rounded-xl border-2 border-dashed border-gold-300 bg-gold-50/30">
+            <div className="flex justify-between items-center mb-4">
+              <h5 className="font-semibold text-surface-700">Neuen Wichtel hinzufügen</h5>
+              <button onClick={resetForm} className="text-surface-400 hover:text-surface-600">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-bold text-surface-500 mb-2 block uppercase tracking-wider">
+                  Name
+                </label>
+                <input
+                  placeholder="z.B. Baby Emma, Hund Bello"
+                  className="w-full text-sm p-3 border-2 border-surface-200 rounded-xl focus:ring-2 focus:ring-gold-200 focus:border-gold-300 outline-none bg-white"
+                  value={wichtelName}
+                  onChange={(e) => setWichtelName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleAddWichtel();
+                    if (e.key === "Escape") resetForm();
+                  }}
+                  autoFocus
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-surface-500 mb-2 block uppercase tracking-wider">
+                  Avatar
+                </label>
+                <div className="flex gap-2 flex-wrap">
+                  {WICHTEL_AVATARS.map((avatar) => (
+                    <button
+                      key={avatar}
+                      onClick={() => setWichtelAvatar(avatar)}
+                      className={`w-10 h-10 flex items-center justify-center text-lg rounded-xl border-2 transition-all btn-press
+                        ${
+                          wichtelAvatar === avatar
+                            ? "ring-2 ring-gold-300 scale-110 border-gold-500 bg-white shadow-md"
+                            : "border-surface-200 bg-surface-50 hover:bg-white hover:border-surface-300"
+                        }
+                      `}
+                    >
+                      {avatar}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleAddWichtel}
+                  className="flex-1 bg-gradient-to-r from-gold-500 to-gold-600 text-white py-2.5 rounded-xl hover:from-gold-600 hover:to-gold-700 font-semibold shadow-md btn-press"
+                >
+                  Wichtel hinzufügen
+                </button>
+                <button
+                  onClick={resetForm}
+                  className="flex-1 bg-surface-100 text-surface-600 py-2.5 rounded-xl hover:bg-surface-200 font-medium btn-press"
+                >
+                  Abbrechen
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setIsAdding(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-dashed border-surface-200 text-surface-400 hover:border-gold-300 hover:text-gold-600 hover:bg-gold-50/30 transition-all btn-press"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="text-sm font-medium">Wichtel hinzufügen</span>
+          </button>
+        )}
+      </div>
+    </div>
+  );
+});
+
+WichtelSection.displayName = "WichtelSection";

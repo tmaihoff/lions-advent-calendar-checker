@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Calendar, Users, ExternalLink } from "lucide-react";
 import type { Group, DayData, DataSource, ActiveTab } from "../types";
-import { LIONS_URL, INITIAL_GROUPS } from "../constants";
+import { LIONS_URL, INITIAL_GROUPS, FEATURE_FLAGS } from "../constants";
 import { generateId } from "../services/utils";
 import { UrlService } from "../services/urlService";
 import { StorageService } from "../services/storageService";
@@ -11,6 +11,7 @@ import { Header } from "./Header";
 import { Dashboard } from "./Dashboard";
 import { GroupsView } from "./GroupsView";
 import { QrModal } from "./QrModal";
+import { FloatingWichtel } from "./FloatingWichtel";
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("dashboard");
@@ -162,8 +163,16 @@ export const App: React.FC = () => {
 
   const shareUrl = useMemo(() => getShareUrl(), [getShareUrl]);
 
+  // Collect all wichtel from all groups
+  const allWichtel = useMemo(() => {
+    return groups.flatMap((g) => g.wichtel || []);
+  }, [groups]);
+
   return (
     <div className="min-h-screen modern-bg font-modern flex flex-col">
+      {/* Floating Wichtel around the page */}
+      {FEATURE_FLAGS.WICHTEL_ENABLED && <FloatingWichtel wichtel={allWichtel} />}
+
       <Header scrollY={scrollY} />
 
       {/* Spacer for fixed header + logo */}

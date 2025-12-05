@@ -26,6 +26,33 @@ export const CHRISTMAS_AVATARS = [
   "🎶", // Music notes (carols)
 ];
 
+export const WICHTEL_AVATARS = [
+  // Babies & Kids
+  "👶", // Baby
+  "👧", // Girl
+  "👦", // Boy
+  "🧒", // Child
+  "👼", // Baby Angel
+  // Pets
+  "🐕", // Dog
+  "🐩", // Poodle
+  "🐈", // Cat
+  "🐱", // Cat face
+  "🐶", // Dog face
+  "🐰", // Bunny
+  "🐹", // Hamster
+  "🐦", // Bird
+  "🐠", // Fish
+  "🦜", // Parrot
+  "🐢", // Turtle
+  "🦔", // Hedgehog
+  // Cute winter animals
+  "🐧", // Penguin
+  "🦊", // Fox
+  "🐻", // Bear
+  "🐨", // Koala
+];
+
 export const INITIAL_GROUPS: Group[] = [
   {
     id: "g1",
@@ -45,3 +72,8 @@ export const STORAGE_KEYS = {
 } as const;
 
 export const LIVE_INDICATOR_DURATION = 15 * 60 * 1000; // 15 minutes
+
+// Feature flags
+export const FEATURE_FLAGS = {
+  WICHTEL_ENABLED: false, // Set to true to enable Wichtel feature
+} as const;

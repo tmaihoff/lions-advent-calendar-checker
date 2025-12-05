@@ -5,3 +5,4 @@ export { DayCard } from "./DayCard";
 export { Dashboard } from "./Dashboard";
 export { GroupsView } from "./GroupsView";
 export { QrModal } from "./QrModal";
+export { FloatingWichtel } from "./FloatingWichtel";

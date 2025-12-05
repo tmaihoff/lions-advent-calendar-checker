@@ -4,7 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lions Adventskalender Checker</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512x512.png">
+    <meta name="theme-color" content="#D42426">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
@@ -84,6 +90,7 @@
               'float': 'float 6s ease-in-out infinite',
               'shimmer': 'shimmer 2s linear infinite',
               'pulse-soft': 'pulse-soft 2s ease-in-out infinite',
+              'bounce-gentle': 'bounce-gentle 3s ease-in-out infinite',
             },
             keyframes: {
               float: {
@@ -97,6 +104,10 @@
               'pulse-soft': {
                 '0%, 100%': { opacity: '1' },
                 '50%': { opacity: '0.7' },
+              },
+              'bounce-gentle': {
+                '0%, 100%': { transform: 'translateY(0px) rotate(-3deg)' },
+                '50%': { transform: 'translateY(-8px) rotate(3deg)' },
               },
             },
           }

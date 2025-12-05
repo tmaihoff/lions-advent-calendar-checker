@@ -5,10 +5,17 @@ export interface Member {
   avatar: string;
 }
 
+export interface Wichtel {
+  id: string;
+  name: string;
+  avatar: string;
+}
+
 export interface Group {
   id: string;
   name: string;
   members: Member[];
+  wichtel?: Wichtel[];
 }
 
 export interface WinGroup {

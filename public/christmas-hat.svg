@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 60" fill="none">
+  <!-- Hat base (red part) -->
+  <path d="M10 55 Q15 35, 50 20 Q85 35, 90 55 Z" fill="#D42426"/>
+  <!-- Hat curve shadow -->
+  <path d="M15 52 Q20 38, 50 25 Q80 38, 85 52 Z" fill="#B91C1C"/>
+  <!-- White fur trim -->
+  <ellipse cx="50" cy="55" rx="45" ry="8" fill="#FAFAFA"/>
+  <ellipse cx="50" cy="55" rx="45" ry="6" fill="white"/>
+  <!-- Pompom -->
+  <circle cx="50" cy="12" r="10" fill="#FAFAFA"/>
+  <circle cx="50" cy="12" r="8" fill="white"/>
+  <!-- Hat tip curve -->
+  <path d="M50 20 Q60 10, 50 12" stroke="#D42426" stroke-width="8" fill="none" stroke-linecap="round"/>
+</svg>
