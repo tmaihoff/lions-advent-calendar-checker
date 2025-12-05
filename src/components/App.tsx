@@ -171,7 +171,9 @@ export const App: React.FC = () => {
   return (
     <div className="min-h-screen modern-bg font-modern flex flex-col">
       {/* Floating Wichtel around the page */}
-      {FEATURE_FLAGS.WICHTEL_ENABLED && <FloatingWichtel wichtel={allWichtel} />}
+      {FEATURE_FLAGS.WICHTEL_ENABLED && (
+        <FloatingWichtel wichtel={allWichtel} />
+      )}
 
       <Header scrollY={scrollY} />
 
@@ -242,8 +244,8 @@ export const App: React.FC = () => {
 
       <footer className="text-center text-surface-400 text-sm py-10 border-t border-surface-200 mt-10 max-w-6xl mx-auto px-6">
         <p>
-          Lions Club Adventskalender Checker Tool • Nicht verbunden mit Lions
-          Club Bad Dürkheim
+          Lions Türchen Tracker • Privates Projekt – nicht mit dem Lions Club
+          Bad Dürkheim verbunden
         </p>
         <a
           href={LIONS_URL}
