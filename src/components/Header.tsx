@@ -12,7 +12,7 @@ export const Header = memo<HeaderProps>(({ scrollY }) => {
   const headerHeightMax = 224;
   const headerShrinkRange = headerHeightMax - headerHeightMin;
 
-  const { shrinkProgress, headerOffset, headerOpacity, extraPadding } =
+  const { headerOffset, extraPadding } =
     useMemo(() => {
       const shrinkProgress = Math.min(1, scrollY / headerShrinkRange);
       const scrollAfterShrink = Math.max(0, scrollY - headerShrinkRange);
@@ -22,16 +22,20 @@ export const Header = memo<HeaderProps>(({ scrollY }) => {
         scrollAfterShrink * parallaxSpeed,
         maxScrollAfterShrink
       );
-      const headerOpacity = Math.max(0, 1 - scrollY / 400);
       const extraPadding = (1 - shrinkProgress) * 126;
 
-      return { shrinkProgress, headerOffset, headerOpacity, extraPadding };
+      return { shrinkProgress, headerOffset, extraPadding };
     }, [scrollY, headerShrinkRange, logoRadius]);
 
-  const textTransform = useMemo(
-    () => `translateY(-${scrollY * 0.8}px)`,
-    [scrollY]
-  );
+  const { textTransform, textOpacity } = useMemo(() => {
+    const translateY = scrollY * 0.15;
+    const scale = 1 + scrollY * 0.001;
+    const opacity = Math.max(0, 1 - scrollY / 200);
+    return {
+      textTransform: `translateY(${translateY}px) scale(${scale})`,
+      textOpacity: opacity,
+    };
+  }, [scrollY]);
 
   return (
     <header
@@ -59,7 +63,7 @@ export const Header = memo<HeaderProps>(({ scrollY }) => {
         <div
           className="flex flex-col items-center text-center"
           style={{
-            opacity: headerOpacity,
+            opacity: textOpacity,
             transform: textTransform,
             willChange: "transform, opacity",
           }}
