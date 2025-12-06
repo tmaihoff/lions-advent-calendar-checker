@@ -211,7 +211,7 @@ export const DayDetailDialog = memo<DayDetailDialogProps>(
                   <p className="text-xs uppercase tracking-widest text-slate-400 font-bold mb-3">
                     Gewinnnummern
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
                     {displayNumbers.map((num) => {
                       const matchedMember = allMembers.find(
                         (m) => m.number === num
@@ -219,7 +219,7 @@ export const DayDetailDialog = memo<DayDetailDialogProps>(
                       return (
                         <div
                           key={num}
-                          className={`px-3 py-2 rounded-xl text-sm font-mono font-bold transition-all flex items-center gap-2
+                          className={`px-3 py-2 rounded-xl text-sm font-mono font-bold transition-all flex items-center gap-2 shrink-0
                             ${
                               matchedMember
                                 ? "bg-gradient-to-r from-christmas-gold to-amber-500 text-white shadow-md"
