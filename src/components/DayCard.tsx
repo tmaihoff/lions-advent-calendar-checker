@@ -199,25 +199,31 @@ export const DayCard = memo<DayCardProps>(({ day, data, groups }) => {
             <div className="flex justify-between items-center mt-3 pt-3 border-t border-christmas-green/10">
               <button
                 onClick={prevSlide}
-                className="p-1.5 hover:bg-christmas-green/10 rounded-lg text-christmas-green/50 hover:text-christmas-green transition btn-press"
+                className="p-1.5 hover:bg-christmas-green/10 rounded-lg text-christmas-green/50 hover:text-christmas-green transition btn-press shrink-0"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <div className="flex gap-1">
-                {winGroups.map((_, idx) => (
-                  <div
-                    key={idx}
-                    className={`w-1.5 h-1.5 rounded-full transition-all ${
-                      idx === slideIndex
-                        ? "bg-christmas-red w-4"
-                        : "bg-christmas-green/30"
-                    }`}
-                  />
-                ))}
+              <div className="flex items-center justify-center gap-1 min-w-0 px-1">
+                {winGroups.length <= 5 ? (
+                  winGroups.map((_, idx) => (
+                    <div
+                      key={idx}
+                      className={`w-1.5 h-1.5 rounded-full transition-all shrink-0 ${
+                        idx === slideIndex
+                          ? "bg-christmas-red w-3"
+                          : "bg-christmas-green/30"
+                      }`}
+                    />
+                  ))
+                ) : (
+                  <span className="text-xs font-medium text-slate-400">
+                    {slideIndex + 1}/{winGroups.length}
+                  </span>
+                )}
               </div>
               <button
                 onClick={nextSlide}
-                className="p-1.5 hover:bg-christmas-green/10 rounded-lg text-christmas-green/50 hover:text-christmas-green transition btn-press"
+                className="p-1.5 hover:bg-christmas-green/10 rounded-lg text-christmas-green/50 hover:text-christmas-green transition btn-press shrink-0"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>

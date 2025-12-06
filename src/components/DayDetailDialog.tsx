@@ -159,9 +159,9 @@ export const DayDetailDialog = memo<DayDetailDialogProps>(
           </div>
 
           {/* Content */}
-          <div className="p-6">
+          <div className="p-6 min-h-[320px] flex flex-col">
             {data ? (
-              <>
+              <div className="flex flex-col flex-1">
                 {/* Winners Section */}
                 {isWinningSlide && winnersForCurrentSlide.length > 0 && (
                   <div className="mb-6 p-4 bg-gradient-to-r from-christmas-gold/10 to-amber-50 rounded-2xl border border-christmas-gold/20">
@@ -207,7 +207,7 @@ export const DayDetailDialog = memo<DayDetailDialogProps>(
                 </div>
 
                 {/* Winning Numbers */}
-                <div>
+                <div className="mt-auto">
                   <p className="text-xs uppercase tracking-widest text-slate-400 font-bold mb-3">
                     Gewinnnummern
                   </p>
@@ -245,42 +245,48 @@ export const DayDetailDialog = memo<DayDetailDialogProps>(
                   <div className="flex justify-between items-center mt-6 pt-4 border-t border-christmas-green/10">
                     <button
                       onClick={prevSlide}
-                      className="p-2 hover:bg-christmas-green/10 rounded-xl text-christmas-green/50 hover:text-christmas-green transition btn-press"
+                      className="p-2 hover:bg-christmas-green/10 rounded-xl text-christmas-green/50 hover:text-christmas-green transition btn-press shrink-0"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <div className="flex items-center gap-2">
-                      {winGroups.map((group, idx) => {
-                        const hasWinner = getWinnersForGroup(group).length > 0;
-                        return (
-                          <button
-                            key={idx}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSlideIndex(idx);
-                            }}
-                            className={`w-2.5 h-2.5 rounded-full transition-all ${
-                              idx === slideIndex
-                                ? hasWinner
-                                  ? "bg-christmas-gold w-6"
-                                  : "bg-christmas-red w-6"
-                                : hasWinner
-                                ? "bg-christmas-gold/40 hover:bg-christmas-gold/60"
-                                : "bg-christmas-green/30 hover:bg-christmas-green/50"
-                            }`}
-                          />
-                        );
-                      })}
+                    <div className="flex items-center justify-center gap-1.5 min-w-0 px-2">
+                      {winGroups.length <= 7 ? (
+                        winGroups.map((group, idx) => {
+                          const hasWinner = getWinnersForGroup(group).length > 0;
+                          return (
+                            <button
+                              key={idx}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSlideIndex(idx);
+                              }}
+                              className={`w-2 h-2 rounded-full transition-all shrink-0 ${
+                                idx === slideIndex
+                                  ? hasWinner
+                                    ? "bg-christmas-gold w-5"
+                                    : "bg-christmas-red w-5"
+                                  : hasWinner
+                                  ? "bg-christmas-gold/40 hover:bg-christmas-gold/60"
+                                  : "bg-christmas-green/30 hover:bg-christmas-green/50"
+                              }`}
+                            />
+                          );
+                        })
+                      ) : (
+                        <span className="text-sm font-medium text-slate-500">
+                          {slideIndex + 1} / {winGroups.length}
+                        </span>
+                      )}
                     </div>
                     <button
                       onClick={nextSlide}
-                      className="p-2 hover:bg-christmas-green/10 rounded-xl text-christmas-green/50 hover:text-christmas-green transition btn-press"
+                      className="p-2 hover:bg-christmas-green/10 rounded-xl text-christmas-green/50 hover:text-christmas-green transition btn-press shrink-0"
                     >
                       <ChevronRight className="w-5 h-5" />
                     </button>
                   </div>
                 )}
-              </>
+              </div>
             ) : (
               <div className="py-12 flex flex-col items-center justify-center text-center">
                 <div className="p-4 bg-christmas-red/10 rounded-2xl mb-4">
