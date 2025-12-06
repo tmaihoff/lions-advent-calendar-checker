@@ -7,22 +7,22 @@ import { useState, useEffect, useRef, useCallback } from "react";
 export function useScrollPosition() {
   const [scrollY, setScrollY] = useState(0);
   const rafRef = useRef<number | null>(null);
-  const lastScrollY = useRef(0);
+  const ticking = useRef(false);
 
   const handleScroll = useCallback(() => {
-    if (rafRef.current !== null) return;
-
-    rafRef.current = requestAnimationFrame(() => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY !== lastScrollY.current) {
-        lastScrollY.current = currentScrollY;
-        setScrollY(currentScrollY);
-      }
-      rafRef.current = null;
-    });
+    if (!ticking.current) {
+      rafRef.current = requestAnimationFrame(() => {
+        setScrollY(window.scrollY);
+        ticking.current = false;
+      });
+      ticking.current = true;
+    }
   }, []);
 
   useEffect(() => {
+    // Set initial scroll position
+    setScrollY(window.scrollY);
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", handleScroll);

@@ -38,6 +38,7 @@ export const Header = memo<HeaderProps>(({ scrollY }) => {
       className="fixed top-0 left-0 right-0 bg-gradient-to-b from-christmas-red via-red-700 to-christmas-red text-white overflow-visible z-50"
       style={{
         transform: `translateY(-${headerOffset}px)`,
+        willChange: "transform",
       }}
     >
       <div
@@ -56,10 +57,11 @@ export const Header = memo<HeaderProps>(({ scrollY }) => {
         }}
       >
         <div
-          className="flex flex-col items-center text-center transition-all duration-100"
+          className="flex flex-col items-center text-center"
           style={{
             opacity: headerOpacity,
             transform: textTransform,
+            willChange: "transform, opacity",
           }}
         >
           <p className="text-red-200 text-sm font-medium mb-3 tracking-wide">
