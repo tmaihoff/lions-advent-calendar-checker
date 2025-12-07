@@ -72,7 +72,7 @@ export const Header = memo<HeaderProps>(({ scrollY }) => {
             Lions Club Bad Dürkheim
           </p>
           <h1 className="text-2xl sm:text-3xl font-display font-bold tracking-tight mb-2">
-            🎄 Adventskalender Checker
+            Lions Türchen Tracker
           </h1>
           <p className="text-red-100/80 text-sm">Dezember 2025</p>
         </div>

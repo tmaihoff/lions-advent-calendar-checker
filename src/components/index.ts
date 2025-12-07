@@ -6,3 +6,5 @@ export { Dashboard } from "./Dashboard";
 export { GroupsView } from "./GroupsView";
 export { QrModal } from "./QrModal";
 export { FloatingWichtel } from "./FloatingWichtel";
+export { HowToSection } from "./HowToSection";
+export { QuickCheckInput } from "./QuickCheckInput";

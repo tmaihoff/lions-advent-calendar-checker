@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { Calendar, Users, ExternalLink } from "lucide-react";
-import type { Group, DayData, DataSource, ActiveTab } from "../types";
-import { LIONS_URL, INITIAL_GROUPS, FEATURE_FLAGS } from "../constants";
+import { ExternalLink, Download } from "lucide-react";
+import type { Group, DayData, DataSource } from "../types";
+import { LIONS_URL, FEATURE_FLAGS } from "../constants";
 import { generateId } from "../services/utils";
 import { UrlService } from "../services/urlService";
 import { StorageService } from "../services/storageService";
-import { fetchLionsData } from "../services/dataService";
+import { fetchLionsData, isEventOver } from "../services/dataService";
 import { useScrollPosition } from "../hooks";
 import { Header } from "./Header";
 import { Dashboard } from "./Dashboard";
-import { GroupsView } from "./GroupsView";
 import { QrModal } from "./QrModal";
 import { FloatingWichtel } from "./FloatingWichtel";
+import { HowToSection } from "./HowToSection";
+import { QuickCheckInput } from "./QuickCheckInput";
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<ActiveTab>("dashboard");
   const [groups, setGroups] = useState<Group[]>([]);
   const [dayData, setDayData] = useState<DayData[]>([]);
   const [loading, setLoading] = useState(false);
@@ -23,24 +23,19 @@ export const App: React.FC = () => {
   const [scrapeError, setScrapeError] = useState<string | null>(null);
   const [showQrModal, setShowQrModal] = useState(false);
   const [initialCheckDone, setInitialCheckDone] = useState(false);
+  const [cachedDataDate, setCachedDataDate] = useState<string | undefined>();
+
+  const eventOver = useMemo(() => isEventOver(), []);
+  const isDev = import.meta.env.DEV;
 
   // Use optimized scroll hook with requestAnimationFrame
   const scrollY = useScrollPosition();
-
-  // Groups editing state (lifted up to prevent reset on scroll)
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
-  const [editingGroupName, setEditingGroupName] = useState<string | null>(null);
-  const [groupNameInput, setGroupNameInput] = useState("");
-  const [newMemberName, setNewMemberName] = useState("");
-  const [newMemberNumber, setNewMemberNumber] = useState("");
-  const [selectedAvatar, setSelectedAvatar] = useState("🎅");
 
   // Load Data
   useEffect(() => {
     const loadedGroups = StorageService.loadGroups();
     if (loadedGroups.length === 0) {
-      setGroups([{ id: generateId(), name: "Meine Gruppe", members: [] }]);
+      setGroups([{ id: generateId(), name: "Meine Losnummern", members: [] }]);
     } else {
       setGroups(loadedGroups);
     }
@@ -95,11 +90,20 @@ export const App: React.FC = () => {
       setLoading(true);
       setScrapeError(null);
 
+      const startTime = Date.now();
       const result = await fetchLionsData(groups, forceSimulate);
+
+      // Ensure minimum 3 second loading time for better UX
+      const elapsed = Date.now() - startTime;
+      const minDelay = 3000;
+      if (elapsed < minDelay) {
+        await new Promise((resolve) => setTimeout(resolve, minDelay - elapsed));
+      }
 
       setDayData(result.dayData);
       setDataSource(result.dataSource);
       if (result.error) setScrapeError(result.error);
+      if (result.cachedDataDate) setCachedDataDate(result.cachedDataDate);
       setLastChecked(new Date());
       localStorage.setItem("lions_last_check", new Date().toISOString());
       setLoading(false);
@@ -119,45 +123,37 @@ export const App: React.FC = () => {
     setShowQrModal(false);
   }, []);
 
-  const handleNavigateToGroups = useCallback(() => {
-    setActiveTab("groups");
-  }, []);
-
-  const handleNavigateToDashboard = useCallback(() => {
-    setActiveTab("dashboard");
-  }, []);
-
-  // Form state handlers (memoized)
-  const handleSetEditingId = useCallback(
-    (id: string | null) => setEditingId(id),
-    []
-  );
-  const handleSetEditingMemberId = useCallback(
-    (id: string | null) => setEditingMemberId(id),
-    []
-  );
-  const handleSetEditingGroupName = useCallback(
-    (id: string | null) => setEditingGroupName(id),
-    []
-  );
-  const handleSetGroupNameInput = useCallback(
-    (val: string) => setGroupNameInput(val),
-    []
-  );
-  const handleSetNewMemberName = useCallback(
-    (val: string) => setNewMemberName(val),
-    []
-  );
-  const handleSetNewMemberNumber = useCallback(
-    (val: string) => setNewMemberNumber(val),
-    []
-  );
-  const handleSetSelectedAvatar = useCallback(
-    (val: string) => setSelectedAvatar(val),
-    []
-  );
   const handleSetGroups = useCallback(
     (newGroups: Group[] | ((prev: Group[]) => Group[])) => setGroups(newGroups),
+    []
+  );
+
+  const handleAddMemberQuick = useCallback(
+    (number: string, name: string, avatar: string) => {
+      setGroups((prev) => {
+        const newGroups = [...prev];
+        if (newGroups.length === 0) {
+          newGroups.push({
+            id: generateId(),
+            name: "Meine Losnummern",
+            members: [],
+          });
+        }
+        newGroups[0] = {
+          ...newGroups[0],
+          members: [
+            ...newGroups[0].members,
+            {
+              id: generateId(),
+              name,
+              number,
+              avatar,
+            },
+          ],
+        };
+        return newGroups;
+      });
+    },
     []
   );
 
@@ -167,6 +163,25 @@ export const App: React.FC = () => {
   const allWichtel = useMemo(() => {
     return groups.flatMap((g) => g.wichtel || []);
   }, [groups]);
+
+  // Dev mode: download current data as JSON for bundling
+  const handleDownloadData = useCallback(() => {
+    const dataToExport = {
+      lastUpdated: new Date().toISOString(),
+      dayData: dayData,
+    };
+    const blob = new Blob([JSON.stringify(dataToExport, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "initialWins.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [dayData]);
 
   return (
     <div className="min-h-screen modern-bg font-modern flex flex-col">
@@ -182,63 +197,24 @@ export const App: React.FC = () => {
 
       {/* Main content */}
       <main className="max-w-6xl mx-auto px-6 pt-4 pb-10 w-full flex-1 relative z-20">
-        <div className="flex justify-center mb-8">
-          <div className="flex p-1.5 bg-white/50 rounded-2xl shadow-sm border border-christmas-green/20 w-full max-w-md">
-            {[
-              { id: "dashboard" as const, label: "Kalender", icon: Calendar },
-              { id: "groups" as const, label: "Mitglieder", icon: Users },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-2.5 py-3 text-sm font-semibold rounded-xl transition-all btn-press
-                  ${
-                    activeTab === tab.id
-                      ? "bg-white text-christmas-green shadow-md"
-                      : "text-slate-500 hover:text-christmas-red"
-                  }`}
-              >
-                <tab.icon className="w-4 h-4" />
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        <HowToSection onShowQr={handleShowQr} />
+
+        <QuickCheckInput groups={groups} onAddMember={handleAddMemberQuick} />
 
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-          {activeTab === "dashboard" ? (
-            <Dashboard
-              groups={groups}
-              dayData={dayData}
-              lastChecked={lastChecked}
-              dataSource={dataSource}
-              scrapeError={scrapeError}
-              loading={loading}
-              onCheck={handleCheck}
-              onNavigateToGroups={handleNavigateToGroups}
-              onShowQr={handleShowQr}
-            />
-          ) : (
-            <GroupsView
-              groups={groups}
-              editingId={editingId}
-              editingMemberId={editingMemberId}
-              editingGroupName={editingGroupName}
-              groupNameInput={groupNameInput}
-              newMemberName={newMemberName}
-              newMemberNumber={newMemberNumber}
-              selectedAvatar={selectedAvatar}
-              onSetGroups={handleSetGroups}
-              onSetEditingId={handleSetEditingId}
-              onSetEditingMemberId={handleSetEditingMemberId}
-              onSetEditingGroupName={handleSetEditingGroupName}
-              onSetGroupNameInput={handleSetGroupNameInput}
-              onSetNewMemberName={handleSetNewMemberName}
-              onSetNewMemberNumber={handleSetNewMemberNumber}
-              onSetSelectedAvatar={handleSetSelectedAvatar}
-              onShowQr={handleShowQr}
-            />
-          )}
+          <Dashboard
+            groups={groups}
+            dayData={dayData}
+            lastChecked={lastChecked}
+            dataSource={dataSource}
+            scrapeError={scrapeError}
+            loading={loading}
+            isEventOver={eventOver}
+            cachedDataDate={cachedDataDate}
+            onCheck={handleCheck}
+            onShowQr={handleShowQr}
+            onSetGroups={handleSetGroups}
+          />
         </div>
       </main>
 
@@ -264,6 +240,15 @@ export const App: React.FC = () => {
             Kontakt
           </a>
         </p>
+        {isDev && dayData.length > 0 && (
+          <button
+            onClick={handleDownloadData}
+            className="mt-4 inline-flex items-center gap-1.5 text-xs text-surface-400 hover:text-surface-600 bg-surface-100 hover:bg-surface-200 px-3 py-1.5 rounded-lg transition-colors"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Download initialWins.json (Dev)
+          </button>
+        )}
       </footer>
 
       {showQrModal && (

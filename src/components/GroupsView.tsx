@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useState } from "react";
-import { Users, Plus, Trash2, X, Pencil, Sparkles, QrCode, Share2 } from "lucide-react";
+import { Ticket, Trash2, X, Pencil, Sparkles, Plus, QrCode, Share2 } from "lucide-react";
 import type { Group, Member, Wichtel } from "../types";
 import { CHRISTMAS_AVATARS, WICHTEL_AVATARS, FEATURE_FLAGS } from "../constants";
 import { generateId } from "../services";
@@ -8,7 +8,6 @@ import { MemberAvatar } from "./MemberAvatar";
 
 interface GroupsViewProps {
   groups: Group[];
-  editingId: string | null;
   editingMemberId: string | null;
   editingGroupName: string | null;
   groupNameInput: string;
@@ -16,7 +15,6 @@ interface GroupsViewProps {
   newMemberNumber: string;
   selectedAvatar: string;
   onSetGroups: (groups: Group[] | ((prev: Group[]) => Group[])) => void;
-  onSetEditingId: (id: string | null) => void;
   onSetEditingMemberId: (id: string | null) => void;
   onSetEditingGroupName: (id: string | null) => void;
   onSetGroupNameInput: (val: string) => void;
@@ -29,7 +27,6 @@ interface GroupsViewProps {
 export const GroupsView = memo<GroupsViewProps>(
   ({
     groups,
-    editingId,
     editingMemberId,
     editingGroupName,
     groupNameInput,
@@ -37,7 +34,6 @@ export const GroupsView = memo<GroupsViewProps>(
     newMemberNumber,
     selectedAvatar,
     onSetGroups,
-    onSetEditingId,
     onSetEditingMemberId,
     onSetEditingGroupName,
     onSetGroupNameInput,
@@ -49,7 +45,6 @@ export const GroupsView = memo<GroupsViewProps>(
     const resetForm = useCallback(() => {
       onSetNewMemberName("");
       onSetNewMemberNumber("");
-      onSetEditingId(null);
       onSetEditingMemberId(null);
       onSetEditingGroupName(null);
       onSetGroupNameInput("");
@@ -57,31 +52,11 @@ export const GroupsView = memo<GroupsViewProps>(
     }, [
       onSetNewMemberName,
       onSetNewMemberNumber,
-      onSetEditingId,
       onSetEditingMemberId,
       onSetEditingGroupName,
       onSetGroupNameInput,
       onSetSelectedAvatar,
     ]);
-
-    const handleAddMember = useCallback(
-      (groupId: string) => {
-        if (!newMemberName || !newMemberNumber) return;
-        const member: Member = {
-          id: generateId(),
-          name: newMemberName,
-          number: newMemberNumber,
-          avatar: selectedAvatar,
-        };
-        onSetGroups((prev) =>
-          prev.map((g) =>
-            g.id === groupId ? { ...g, members: [...g.members, member] } : g
-          )
-        );
-        resetForm();
-      },
-      [newMemberName, newMemberNumber, selectedAvatar, onSetGroups, resetForm]
-    );
 
     const handleEditMember = useCallback(
       (groupId: string, memberId: string) => {
@@ -155,17 +130,44 @@ export const GroupsView = memo<GroupsViewProps>(
       [onSetGroups]
     );
 
+    const handleAddMember = useCallback(
+      (groupId: string) => {
+        if (!newMemberNumber.trim()) return;
+        const memberName = newMemberName.trim() || `Los ${newMemberNumber}`;
+        onSetGroups((prev) =>
+          prev.map((g) =>
+            g.id === groupId
+              ? {
+                  ...g,
+                  members: [
+                    ...g.members,
+                    {
+                      id: generateId(),
+                      name: memberName,
+                      number: newMemberNumber.trim(),
+                      avatar: selectedAvatar,
+                    },
+                  ],
+                }
+              : g
+          )
+        );
+        resetForm();
+      },
+      [newMemberName, newMemberNumber, selectedAvatar, onSetGroups, resetForm]
+    );
+
     return (
       <div className="space-y-6">
         <h2 className="text-xl font-display font-bold text-surface-800">
-          Meine Gruppe
+          Meine Losnummern
         </h2>
 
         {groups.map((group) => (
           <Card key={group.id} className="p-6" hover={false}>
             <div className="flex items-center gap-4 mb-6 border-b border-surface-100 pb-5">
               <div className="w-12 h-12 bg-gradient-to-br from-brand-100 to-brand-50 rounded-xl flex items-center justify-center">
-                <Users className="w-6 h-6 text-brand-600" />
+                <Ticket className="w-6 h-6 text-brand-600" />
               </div>
               <div className="flex-1">
                 {editingGroupName === group.id ? (
@@ -211,6 +213,76 @@ export const GroupsView = memo<GroupsViewProps>(
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Add new member form */}
+              <div className="p-5 rounded-2xl border-2 border-dashed border-surface-200 bg-surface-50/30 hover:border-brand-300 hover:bg-brand-50/20 transition-all">
+                <h4 className="font-display font-bold text-surface-700 mb-4 flex items-center gap-2">
+                  <Plus className="w-4 h-4" />
+                  Losnummer hinzufügen
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs font-bold text-surface-500 mb-1.5 block uppercase tracking-wider">
+                      Losnummer
+                    </label>
+                    <input
+                      placeholder="z.B. 1234"
+                      className="w-full text-sm p-3 border-2 border-surface-200 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-300 outline-none bg-white text-surface-900 placeholder:text-surface-400 font-mono"
+                      value={newMemberNumber}
+                      onChange={(e) => onSetNewMemberNumber(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleAddMember(group.id);
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-surface-500 mb-1.5 block uppercase tracking-wider">
+                      Name (optional)
+                    </label>
+                    <input
+                      placeholder="z.B. Oma"
+                      className="w-full text-sm p-3 border-2 border-surface-200 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-300 outline-none bg-white text-surface-900 placeholder:text-surface-400"
+                      value={newMemberName}
+                      onChange={(e) => onSetNewMemberName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleAddMember(group.id);
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-surface-500 mb-1.5 block uppercase tracking-wider">
+                      Avatar
+                    </label>
+                    <div className="flex gap-2 flex-wrap">
+                      {CHRISTMAS_AVATARS.slice(0, 10).map((avatar) => (
+                        <button
+                          key={avatar}
+                          type="button"
+                          onClick={() => onSetSelectedAvatar(avatar)}
+                          className={`w-10 h-10 flex items-center justify-center text-lg rounded-xl border-2 transition-all btn-press
+                            ${
+                              selectedAvatar === avatar
+                                ? "ring-2 ring-brand-300 scale-110 border-brand-500 bg-white shadow-md"
+                                : "border-surface-200 bg-surface-50 hover:bg-white hover:border-surface-300"
+                            }
+                          `}
+                        >
+                          {avatar}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleAddMember(group.id)}
+                    disabled={!newMemberNumber.trim()}
+                    className="w-full bg-gradient-to-r from-brand-500 to-brand-600 text-white py-3 rounded-xl hover:from-brand-600 hover:to-brand-700 font-semibold shadow-md btn-press disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Hinzufügen
+                  </button>
+                </div>
+              </div>
+
               {group.members.map((member) =>
                 editingMemberId === member.id ? (
                   <div
@@ -343,124 +415,6 @@ export const GroupsView = memo<GroupsViewProps>(
                 )
               )}
 
-              <div
-                className={`rounded-xl border-2 border-dashed overflow-hidden transition-all ${
-                  editingId === group.id
-                    ? "bg-accent-50/30 border-accent-300 col-span-1 md:col-span-2 lg:col-span-3"
-                    : "border-surface-200 hover:border-surface-300 hover:bg-surface-50 min-h-[100px]"
-                }`}
-              >
-                {editingId === group.id ? (
-                  <div className="p-5 space-y-5">
-                    <div className="flex justify-between items-center">
-                      <h4 className="font-display font-bold text-surface-700">
-                        Neues Mitglied hinzufügen
-                      </h4>
-                      <button
-                        onClick={resetForm}
-                        className="text-surface-400 hover:text-surface-600"
-                      >
-                        <X className="w-5 h-5" />
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                      <div className="space-y-4">
-                        <div>
-                          <label className="text-xs font-bold text-surface-500 mb-2 block uppercase tracking-wider">
-                            Name
-                          </label>
-                          <input
-                            placeholder="z.B. Oma"
-                            className="w-full text-sm p-3 border-2 border-surface-200 rounded-xl focus:ring-2 focus:ring-accent-200 focus:border-accent-300 outline-none bg-white text-surface-900 placeholder:text-surface-400"
-                            value={newMemberName}
-                            onChange={(e) => onSetNewMemberName(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") handleAddMember(group.id);
-                              if (e.key === "Escape") resetForm();
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs font-bold text-surface-500 mb-2 block uppercase tracking-wider">
-                            Losnummer
-                          </label>
-                          <input
-                            placeholder="z.B. 1234"
-                            className="w-full text-sm p-3 border-2 border-surface-200 rounded-xl focus:ring-2 focus:ring-accent-200 focus:border-accent-300 outline-none bg-white text-surface-900 placeholder:text-surface-400 font-mono"
-                            value={newMemberNumber}
-                            onChange={(e) => onSetNewMemberNumber(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") handleAddMember(group.id);
-                              if (e.key === "Escape") resetForm();
-                            }}
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="text-xs font-bold text-surface-500 mb-2 block uppercase tracking-wider">
-                          Avatar wählen
-                        </label>
-                        <div className="flex gap-2 flex-wrap">
-                          {CHRISTMAS_AVATARS.map((avatar) => (
-                            <button
-                              key={avatar}
-                              onClick={() => onSetSelectedAvatar(avatar)}
-                              className={`w-11 h-11 flex items-center justify-center text-xl rounded-xl border-2 transition-all btn-press
-                                ${
-                                  selectedAvatar === avatar
-                                    ? "ring-2 ring-accent-300 scale-110 border-accent-500 bg-white shadow-md"
-                                    : "border-surface-200 bg-surface-50 hover:bg-white hover:border-surface-300"
-                                }
-                              `}
-                            >
-                              {avatar}
-                            </button>
-                          ))}
-                        </div>
-
-                        <div className="flex items-center gap-3 p-3 bg-surface-50 rounded-xl border border-surface-100 mt-4">
-                          <MemberAvatar
-                            avatar={selectedAvatar}
-                            className="w-12 h-12 text-2xl"
-                          />
-                          <span className="text-sm text-surface-400 font-medium">
-                            Vorschau
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="pt-2 flex gap-3">
-                      <button
-                        onClick={() => handleAddMember(group.id)}
-                        className="flex-1 bg-gradient-to-r from-accent-500 to-accent-600 text-white py-3 rounded-xl hover:from-accent-600 hover:to-accent-700 font-semibold shadow-md btn-press"
-                      >
-                        Mitglied speichern
-                      </button>
-                      <button
-                        onClick={resetForm}
-                        className="flex-1 bg-surface-100 text-surface-600 py-3 rounded-xl hover:bg-surface-200 font-medium btn-press"
-                      >
-                        Abbrechen
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => onSetEditingId(group.id)}
-                    className="w-full h-full flex flex-col items-center justify-center text-surface-400 gap-2 py-6 hover:text-accent-500 transition-colors"
-                  >
-                    <div className="p-3 bg-surface-100 rounded-xl group-hover:bg-accent-100 transition-colors">
-                      <Plus className="w-6 h-6" />
-                    </div>
-                    <span className="text-sm font-semibold">
-                      Mitglied hinzufügen
-                    </span>
-                  </button>
-                )}
-              </div>
             </div>
 
             {/* Wichtel Section */}
@@ -481,10 +435,10 @@ export const GroupsView = memo<GroupsViewProps>(
             </div>
             <div className="flex-1">
               <h3 className="font-display font-bold text-lg text-surface-800">
-                Gruppe teilen
+                Losnummern teilen
               </h3>
               <p className="text-sm text-surface-500">
-                Teile deine Gruppendaten mit Familie und Freunden
+                Teile deine Losnummern mit Familie und Freunden
               </p>
             </div>
           </div>

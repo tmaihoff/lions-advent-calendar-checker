@@ -57,7 +57,7 @@ export const QrModal = memo<QrModalProps>(({ shareUrl, onCopy, onClose }) => {
             <QrCode className="w-7 h-7 text-white" />
           </div>
           <h3 className="text-xl font-display font-bold text-slate-800 mb-2">
-            🎄 Gruppe teilen
+            🎄 Losnummern teilen
           </h3>
           <p className="text-sm text-slate-500 mb-6">
             Scanne den QR-Code oder teile den Link – die Daten werden einmalig übernommen. Danach hat jeder seine eigene Kopie.

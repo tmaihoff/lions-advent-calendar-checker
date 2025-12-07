@@ -36,5 +36,5 @@ export interface WinEntry {
   sponsor: string;
 }
 
-export type DataSource = "real" | "simulated" | "none";
+export type DataSource = "real" | "error" | "cached" | "none";
 export type ActiveTab = "dashboard" | "groups";

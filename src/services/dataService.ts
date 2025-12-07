@@ -1,5 +1,6 @@
 import type { DayData, WinGroup, Group } from "../types";
-import { LIONS_URL } from "../constants";
+import { LIONS_URL, EVENT_CONFIG } from "../constants";
+import initialWinsData from "../data/initialWins.json";
 
 export const parseWinsFromHtml = (html: string): DayData[] => {
   const results: DayData[] = [];
@@ -152,51 +153,70 @@ export const generateSimulationData = (groups: Group[]): DayData[] => {
 
 interface FetchResult {
   dayData: DayData[];
-  dataSource: "real" | "simulated";
+  dataSource: "real" | "error" | "cached";
   error: string | null;
+  cachedDataDate?: string;
 }
 
+// Check if the event has ended
+export const isEventOver = (): boolean => {
+  return new Date() > EVENT_CONFIG.EVENT_END_DATE;
+};
+
+// Get initial/cached data from the bundled JSON
+export const getInitialData = (): { dayData: DayData[]; lastUpdated: string } => {
+  return {
+    dayData: (initialWinsData.dayData as DayData[]) || [],
+    lastUpdated: initialWinsData.lastUpdated || "",
+  };
+};
+
 export const fetchLionsData = async (
-  groups: Group[],
-  forceSimulate = false
+  _groups: Group[],
+  _forceSimulate = false
 ): Promise<FetchResult> => {
-  let isSimulating = forceSimulate;
-  let dayData: DayData[] = [];
-  let error: string | null = null;
+  const { dayData: cachedData, lastUpdated } = getInitialData();
+
+  // If event is over, return cached data without fetching
+  if (isEventOver()) {
+    return {
+      dayData: cachedData,
+      dataSource: "cached",
+      error: null,
+      cachedDataDate: lastUpdated,
+    };
+  }
 
   try {
-    if (!isSimulating) {
-      try {
-        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(LIONS_URL)}`;
-        const response = await fetch(proxyUrl);
-        if (!response.ok) throw new Error("Failed to fetch via proxy");
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(LIONS_URL)}`;
+    const response = await fetch(proxyUrl);
+    if (!response.ok) throw new Error("Verbindung fehlgeschlagen");
 
-        const htmlText = await response.text();
-        if (!htmlText) throw new Error("Empty response");
+    const htmlText = await response.text();
+    if (!htmlText) throw new Error("Leere Antwort vom Server");
 
-        dayData = parseWinsFromHtml(htmlText);
+    const dayData = parseWinsFromHtml(htmlText);
 
-        if (dayData.length === 0) {
-          throw new Error("No numbers found. HTML structure might have changed.");
-        }
-
-        return { dayData, dataSource: "real", error: null };
-      } catch (err: unknown) {
-        console.warn("Real scrape failed:", err);
-        error = err instanceof Error ? err.message : "Connection failed";
-        isSimulating = true;
-      }
+    if (dayData.length === 0) {
+      throw new Error("Keine Gewinnzahlen gefunden");
     }
 
-    if (isSimulating) {
-      if (!forceSimulate) await new Promise((r) => setTimeout(r, 800));
-      else await new Promise((r) => setTimeout(r, 1000));
-      dayData = generateSimulationData(groups);
+    return { dayData, dataSource: "real", error: null };
+  } catch (err: unknown) {
+    console.error("Fetch failed:", err);
+    const errorMessage = err instanceof Error ? err.message : "Unbekannter Fehler";
+    // On error, fall back to initial data if available
+    if (cachedData.length > 0) {
+      const formattedDate = lastUpdated
+        ? new Date(lastUpdated).toLocaleDateString("de-DE")
+        : "unbekannt";
+      return {
+        dayData: cachedData,
+        dataSource: "cached",
+        error: `${errorMessage} – zeige gespeicherte Daten vom ${formattedDate}`,
+        cachedDataDate: lastUpdated,
+      };
     }
-
-    return { dayData, dataSource: "simulated", error };
-  } catch (err) {
-    console.error(err);
-    return { dayData: [], dataSource: "simulated", error: "Unknown error" };
+    return { dayData: [], dataSource: "error", error: errorMessage };
   }
 };

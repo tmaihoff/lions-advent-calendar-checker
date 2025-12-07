@@ -1,0 +1,359 @@
+{
+  "lastUpdated": "2025-12-07T19:49:44.666Z",
+  "dayData": [
+    {
+      "day": 1,
+      "winGroups": [
+        {
+          "sponsor": "ABV Kachelöfen GmbH",
+          "prize": "Feuerabendpaket im Wert von 35 €",
+          "numbers": ["3399", "217"]
+        },
+        {
+          "sponsor": "American Fitnesscenter",
+          "prize": "Ein-Monatsgutschein im Wert von 69 €",
+          "numbers": ["288"]
+        },
+        {
+          "sponsor": "amling Mode",
+          "prize": "Gutschein im Wert von 25 €",
+          "numbers": ["1378", "1833", "1148", "2940", "3180"]
+        },
+        {
+          "sponsor": "Bäckerei Sippel",
+          "prize": "Rahmkuchen mit Heidelbeeren im Wert von 30 €",
+          "numbers": ["878"]
+        },
+        {
+          "sponsor": "Baumschule W. Grill",
+          "prize": "Ein Weihnachtsbaum im Wert von 40 € und dazu einen Glühwein",
+          "numbers": ["2919"]
+        },
+        {
+          "sponsor": "Friseur Greving",
+          "prize": "Gutschein im Wert von 35 €",
+          "numbers": [
+            "3362",
+            "1003",
+            "2437",
+            "3307",
+            "797",
+            "1053",
+            "2913",
+            "584",
+            "2742",
+            "2920"
+          ]
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "winGroups": [
+        {
+          "sponsor": "Café und Weinbar HENSEL UND GRETEL",
+          "prize": "Verzehrgutschein im Wert von 25 €",
+          "numbers": ["450", "2917", "3265", "701", "2900"]
+        },
+        {
+          "sponsor": "Göbel e.K., Leistadter Sandsteinbruch",
+          "prize": "Weinkühler Classic im Wert von 65 €",
+          "numbers": ["1236"]
+        },
+        {
+          "sponsor": "Hauers Gutsausschank",
+          "prize": "Gutschein für Hauer’s Gutsausschank im Wert von 25 €",
+          "numbers": ["317", "3020"]
+        },
+        {
+          "sponsor": "HIT Handelsgruppe Bad Dürkheim",
+          "prize": "Einkaufsgutschein im Wert von 25 €",
+          "numbers": ["3139", "2715"]
+        },
+        {
+          "sponsor": "Optik Hübler",
+          "prize": "Warengutschein im Wert von 25 €",
+          "numbers": ["3297", "2210"]
+        },
+        {
+          "sponsor": "Metzgerei Hambel",
+          "prize": "Einkaufsgutschein im Wert von 25 €",
+          "numbers": ["2541", "214", "651", "1301"]
+        },
+        {
+          "sponsor": "Sanitätshaus Horr",
+          "prize": "Gutschein im Wert von 50 €",
+          "numbers": ["366", "396"]
+        },
+        {
+          "sponsor": "Rösers Restaurant im Weinrefugium",
+          "prize": "Gutschein40 im Wert von 40 €",
+          "numbers": ["503"]
+        },
+        {
+          "sponsor": "Weingut am Nil GmbH und Co KG",
+          "prize": "Frühstück für 2 Personen im Weingut im Wert von 56 €",
+          "numbers": ["1343"]
+        },
+        {
+          "sponsor": "Vier Jahreszeiten Winzer eG",
+          "prize": "3 Flaschen Wein im Wert von 30 €",
+          "numbers": ["106"]
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "winGroups": [
+        {
+          "sponsor": "Weingut Darting",
+          "prize": "Weinpaket im Wert von 30 €",
+          "numbers": ["2556", "2186", "2047", "1596", "3326"]
+        },
+        {
+          "sponsor": "Weingut Pfeffingen",
+          "prize": "Ein hochwertiges Weinpaket im Wert von 33 €",
+          "numbers": ["2146", "1247", "672"]
+        },
+        {
+          "sponsor": "Gartenhotel Heusser",
+          "prize": "Gutschein zum Sonntags-Schlemmerbuffet im Wert von 49 €",
+          "numbers": ["3087", "2762", "3396", "2599", "3329"]
+        },
+        {
+          "sponsor": "Spezialitätenmetzgerei Tempel GmbH",
+          "prize": "Gutschein im Wert von 25 €",
+          "numbers": ["1977", "2367", "1123", "2830", "544"]
+        },
+        {
+          "sponsor": "Reifen Stefan Bad Dürkheim GmbH",
+          "prize": "Gutschein im Wert von 50 €",
+          "numbers": ["97", "2366", "3098", "2297"]
+        },
+        {
+          "sponsor": "Pusteblume",
+          "prize": "Blumenstrauß im Wert von 25 €",
+          "numbers": ["888"]
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "winGroups": [
+        {
+          "sponsor": "Lerzer Friseur am Schlossplatz",
+          "prize": "Gutschein für Friseurdienstleistungen im Wert von 26 €",
+          "numbers": [
+            "2385",
+            "1985",
+            "1336",
+            "986",
+            "2899",
+            "3166",
+            "2291",
+            "2386",
+            "3140",
+            "2605"
+          ]
+        },
+        {
+          "sponsor": "Goutorbe-Wagner Reben GmbH",
+          "prize": "Zwei Tafeltrauben-Pflanzen im Wert von 25 €",
+          "numbers": ["3117", "1681", "2504", "872", "1162"]
+        },
+        {
+          "sponsor": "DieDa im Bach-Mayer",
+          "prize": "Gutschein im Wert von 25 €",
+          "numbers": ["3137"]
+        },
+        {
+          "sponsor": "Stiegler LEH Bad Dürkheim KG",
+          "prize": "Einkaufsgutschein im Wert von 25 €",
+          "numbers": ["1375", "1861"]
+        },
+        {
+          "sponsor": "Lintz und Wolf Holzbau GmbH",
+          "prize": "Gutschein im Wert von 25 €",
+          "numbers": ["3001", "3131", "2275", "1759", "2647"]
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "winGroups": [
+        {
+          "sponsor": "Friseur Greving",
+          "prize": "Gutschein im Wert von 35 €",
+          "numbers": [
+            "2883",
+            "2328",
+            "410",
+            "3085",
+            "745",
+            "541",
+            "1233",
+            "1361",
+            "1027",
+            "882"
+          ]
+        },
+        {
+          "sponsor": "C2INNO GmbH",
+          "prize": "Einkaufsgutschein für Bad Dürkheim im Wert von 50 €",
+          "numbers": ["1070", "393", "1256"]
+        },
+        {
+          "sponsor": "Brunnen-Apotheke",
+          "prize": "Einkaufsgutschein im Wert von 30 €",
+          "numbers": ["1615", "898", "1875", "2165"]
+        },
+        {
+          "sponsor": "Blumen Fickeisen",
+          "prize": "Gutschein im Wert von 25 €",
+          "numbers": ["315", "2471", "2912"]
+        },
+        {
+          "sponsor": "B&T Kurpfalz-Park",
+          "prize": "2 Eintrittskarten im Wert von 38 €",
+          "numbers": ["3113", "3010", "1077", "957", "75"]
+        },
+        {
+          "sponsor": "Manthey Bekleidungshaus GmbH",
+          "prize": "Einkaufsgutschein im Wert von 25 €",
+          "numbers": ["747", "1254", "776", "3394", "1727"]
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "winGroups": [
+        {
+          "sponsor": "Margaretenhof",
+          "prize": "Gutschein für Online Gymnastik im Wert von 30 €",
+          "numbers": ["1050", "2055", "3187", "2960", "3168"]
+        },
+        {
+          "sponsor": "Lerzer Friseur am Schlossplatz",
+          "prize": "Gutschein für Friseurdienstleistungen im Wert von 26 €",
+          "numbers": [
+            "2617",
+            "1417",
+            "1090",
+            "1161",
+            "142",
+            "120",
+            "443",
+            "1503",
+            "2834",
+            "2258"
+          ]
+        },
+        {
+          "sponsor": "Göbel e.K., Leistadter Sandsteinbruch",
+          "prize": "Gartenfackel Petrolium im Wert von 47 €",
+          "numbers": ["1995"]
+        },
+        {
+          "sponsor": "Brennerei Axel Hubach",
+          "prize": "Gutschein für erlesene Destillate Wert im Wert von 25 €",
+          "numbers": ["2071", "3352"]
+        },
+        {
+          "sponsor": "Stiegler LEH Bad Dürkheim KG",
+          "prize": "Einkaufsgutschein im Wert von 25 €",
+          "numbers": ["2553", "1478"]
+        },
+        {
+          "sponsor": "Flugsportverein Bad Dürkheim e.V.",
+          "prize": "30 minütiger Schnupperflug im Wert von 100 €",
+          "numbers": ["2411"]
+        },
+        {
+          "sponsor": "DieDa im Bach-Mayer",
+          "prize": "Gutschein im Wert von 25 €",
+          "numbers": ["3295"]
+        },
+        {
+          "sponsor": "DÜKA",
+          "prize": "1 kg Kaffee im Wert von 25 €",
+          "numbers": ["383"]
+        },
+        {
+          "sponsor": "MB Management",
+          "prize": "Barpreis im Wert von 500 €",
+          "numbers": ["3015"]
+        },
+        {
+          "sponsor": "Michlers Haus der guten Weine",
+          "prize": "Seminargutschein im Wert von 59 €",
+          "numbers": ["1078"]
+        },
+        {
+          "sponsor": "novacare GmbH",
+          "prize": "einen Spinefitter im Wert von 129 €",
+          "numbers": ["2798"]
+        },
+        {
+          "sponsor": "Spielbank Bad Dürkheim",
+          "prize": "Jeton-Gutscheine im Wert von 200 €",
+          "numbers": ["1720"]
+        },
+        {
+          "sponsor": "Salinarium Bad Dürkheim - Therme",
+          "prize": "2 Karten für Therme, Sauna und Bad Salinarium im Wert von 66,4 €",
+          "numbers": ["1441", "1704"]
+        },
+        {
+          "sponsor": "Tanzhaus La Danza",
+          "prize": "Paartanzkurs im Wert von 190 €",
+          "numbers": ["1243"]
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "winGroups": [
+        {
+          "sponsor": "Spezialitätenmetzgerei Tempel GmbH",
+          "prize": "Gutschein im Wert von 25 €",
+          "numbers": ["1943", "1433", "1602"]
+        },
+        {
+          "sponsor": "Salinarium Bad Dürkheim - Therme",
+          "prize": "10er Karte für das Bad Salinarium im Wert von 75 €",
+          "numbers": ["2042", "628", "2028", "122", "2337"]
+        },
+        {
+          "sponsor": "Taxi Cusnick",
+          "prize": "Taxigutscheine im Wert von 30 €",
+          "numbers": ["906", "1163", "2538", "799", "1965"]
+        },
+        {
+          "sponsor": "Thachisia Asia-Haus",
+          "prize": "Essensgutschein im Wert von 25 €",
+          "numbers": ["2806", "2384"]
+        },
+        {
+          "sponsor": "Weingut Darting",
+          "prize": "Weinpaket im Wert von 30 €",
+          "numbers": ["778", "1001"]
+        },
+        {
+          "sponsor": "Weingut Philipp Hofmann",
+          "prize": "3er Weinpaket im Wert von 25,4 €",
+          "numbers": ["391"]
+        },
+        {
+          "sponsor": "Weingut Zimmermann",
+          "prize": "2er Weinpaket 2021 Altenburg Riesling im Wert von 40 €",
+          "numbers": ["289"]
+        },
+        {
+          "sponsor": "Weinwerk Stepp",
+          "prize": "3 Flaschen Wein im Wert von 25 €",
+          "numbers": ["340"]
+        }
+      ]
+    }
+  ]
+}

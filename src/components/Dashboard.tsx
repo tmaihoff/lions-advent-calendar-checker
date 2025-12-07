@@ -1,12 +1,15 @@
-import React, { memo, useMemo, useCallback } from "react";
+import React, { memo, useMemo, useState } from "react";
 import {
   Calendar,
-  Users,
-  Plus,
+  Ticket,
   AlertCircle,
   RefreshCw,
   Trophy,
-  Share2,
+  QrCode,
+  Pencil,
+  X,
+  Check,
+  Archive,
 } from "lucide-react";
 import type { Group, DayData, DataSource, WinEntry } from "../types";
 import { LIVE_INDICATOR_DURATION } from "../constants";
@@ -21,9 +24,11 @@ interface DashboardProps {
   dataSource: DataSource;
   scrapeError: string | null;
   loading: boolean;
+  isEventOver: boolean;
+  cachedDataDate?: string;
   onCheck: () => void;
-  onNavigateToGroups: () => void;
   onShowQr: () => void;
+  onSetGroups: (groups: Group[] | ((prev: Group[]) => Group[])) => void;
 }
 
 export const Dashboard = memo<DashboardProps>(
@@ -34,10 +39,13 @@ export const Dashboard = memo<DashboardProps>(
     dataSource,
     scrapeError,
     loading,
+    isEventOver,
+    cachedDataDate,
     onCheck,
-    onNavigateToGroups,
     onShowQr,
+    onSetGroups,
   }) => {
+    const [isEditMode, setIsEditMode] = useState(false);
     const allMembers = useMemo(
       () => groups.flatMap((g) => g.members),
       [groups]
@@ -71,7 +79,7 @@ export const Dashboard = memo<DashboardProps>(
       );
     }, [dataSource, lastChecked]);
 
-    const groupName = groups[0]?.name || "Meine Gruppe";
+    const groupName = groups[0]?.name || "Meine Losnummern";
 
     return (
       <div className="space-y-8">
@@ -100,56 +108,113 @@ export const Dashboard = memo<DashboardProps>(
                         Live
                       </span>
                     )}
-                    {dataSource === "simulated" && (
-                      <span className="text-xs bg-christmas-gold/20 text-amber-700 px-2.5 py-1 rounded-full font-semibold">
-                        🎭 Demo
+                    {dataSource === "cached" && (
+                      <span className="text-xs bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full font-semibold flex items-center gap-1">
+                        <Archive className="w-3 h-3" />
+                        {isEventOver ? "Archiv" : "Gespeichert"}
+                      </span>
+                    )}
+                    {dataSource === "error" && (
+                      <span className="text-xs bg-red-100 text-red-700 px-2.5 py-1 rounded-full font-semibold">
+                        Fehler
                       </span>
                     )}
                   </div>
                 </div>
               </div>
-              {scrapeError && dataSource === "simulated" && (
-                <p className="text-sm text-amber-700 flex items-center gap-2 bg-christmas-gold/10 px-3 py-2 rounded-lg">
-                  <AlertCircle className="w-4 h-4" /> {scrapeError}. Demo-Daten
-                  werden angezeigt.
+              {scrapeError && dataSource === "error" && (
+                <p className="text-sm text-red-700 flex items-center gap-2 bg-red-50 px-3 py-2 rounded-lg">
+                  <AlertCircle className="w-4 h-4" /> {scrapeError}
+                </p>
+              )}
+              {scrapeError && dataSource === "cached" && (
+                <p className="text-sm text-amber-700 flex items-center gap-2 bg-amber-50 px-3 py-2 rounded-lg">
+                  <AlertCircle className="w-4 h-4" /> {scrapeError}
+                </p>
+              )}
+              {isEventOver && dataSource === "cached" && !scrapeError && cachedDataDate && (
+                <p className="text-sm text-slate-500 flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-lg">
+                  <Archive className="w-4 h-4" />
+                  Adventskalender 2025 beendet – Archivdaten vom {new Date(cachedDataDate).toLocaleDateString("de-DE")}
                 </p>
               )}
             </div>
 
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={onCheck}
-                disabled={loading}
-                className="flex items-center justify-center gap-2 bg-gradient-to-r from-christmas-green to-green-700 text-white px-5 py-2.5 rounded-xl hover:from-green-700 hover:to-green-800 transition disabled:opacity-50 shadow-md btn-press font-medium"
-              >
-                <RefreshCw
-                  className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
-                />
-                Jetzt prüfen
-              </button>
-            </div>
+            {!isEventOver && (
+              <div className="flex flex-col items-center gap-1.5">
+                <button
+                  onClick={onCheck}
+                  disabled={loading}
+                  className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl transition shadow-md btn-press font-medium ${
+                    loading
+                      ? "bg-slate-400 text-white cursor-wait"
+                      : dataSource === "error"
+                      ? "bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700"
+                      : dataSource === "cached"
+                      ? "bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700"
+                      : "bg-gradient-to-r from-christmas-green to-green-700 text-white hover:from-green-700 hover:to-green-800"
+                  }`}
+                >
+                  <RefreshCw
+                    className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+                  />
+                  {loading
+                    ? "Laden..."
+                    : dataSource === "error"
+                    ? "Erneut versuchen"
+                    : dataSource === "cached"
+                    ? "Neu laden"
+                    : isLive
+                    ? "Erneut prüfen"
+                    : "Jetzt prüfen"}
+                </button>
+                {isLive && !loading && (
+                  <span className="text-xs text-christmas-green font-medium">
+                    Daten aktuell
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </Card>
 
-        {/* Members Quick View */}
+        {/* Members Section with Edit Mode */}
         <Card className="p-6 border-christmas-green/20" hover={false}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-display font-bold text-slate-800 flex items-center gap-2">
-              <Users className="w-5 h-5 text-christmas-green" />
+              <Ticket className="w-5 h-5 text-christmas-green" />
               🎄 {groupName}
             </h3>
-            <button
-              onClick={onNavigateToGroups}
-              className="text-sm text-christmas-red hover:text-red-700 font-medium"
-            >
-              Bearbeiten →
-            </button>
+            {allMembers.length > 0 && (
+              <button
+                onClick={() => setIsEditMode(!isEditMode)}
+                className={`text-sm font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition ${
+                  isEditMode
+                    ? "bg-christmas-green/10 text-christmas-green"
+                    : "text-slate-500 hover:text-christmas-green hover:bg-christmas-green/5"
+                }`}
+              >
+                {isEditMode ? (
+                  <>
+                    <Check className="w-4 h-4" />
+                    Fertig
+                  </>
+                ) : (
+                  <>
+                    <Pencil className="w-4 h-4" />
+                    Bearbeiten
+                  </>
+                )}
+              </button>
+            )}
           </div>
           <div className="flex flex-wrap gap-3">
             {allMembers.map((member) => (
               <div
                 key={member.id}
-                className="flex items-center gap-2.5 bg-christmas-cream rounded-full pl-1.5 pr-4 py-1.5 border border-christmas-green/20 hover:border-christmas-green/40 hover:shadow-sm transition"
+                className={`flex items-center gap-2.5 bg-christmas-cream rounded-full pl-1.5 pr-4 py-1.5 border border-christmas-green/20 transition group ${
+                  isEditMode ? "hover:border-red-300" : "hover:border-christmas-green/40 hover:shadow-sm"
+                }`}
               >
                 <MemberAvatar
                   avatar={member.avatar}
@@ -161,25 +226,38 @@ export const Dashboard = memo<DashboardProps>(
                 <span className="text-xs font-mono bg-christmas-green/20 px-2 py-0.5 rounded-md text-christmas-green">
                   #{member.number}
                 </span>
+                {isEditMode && (
+                  <button
+                    onClick={() => {
+                      onSetGroups((prev) =>
+                        prev.map((g) => ({
+                          ...g,
+                          members: g.members.filter((m) => m.id !== member.id),
+                        }))
+                      );
+                    }}
+                    className="ml-1 p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition"
+                    title="Entfernen"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
               </div>
             ))}
             {allMembers.length === 0 && (
-              <button
-                onClick={onNavigateToGroups}
-                className="flex items-center gap-2 text-sm text-slate-400 hover:text-christmas-red transition"
-              >
-                <Plus className="w-4 h-4" /> Mitglieder hinzufügen
-              </button>
+              <p className="text-sm text-slate-400">
+                Noch keine Losnummern hinzugefügt. Nutze das Eingabefeld oben, um deine erste Losnummer zu prüfen.
+              </p>
             )}
           </div>
           {allMembers.length > 0 && (
             <div className="mt-4 pt-4 border-t border-christmas-green/10">
               <button
                 onClick={onShowQr}
-                className="flex items-center gap-2 text-sm text-slate-400 hover:text-christmas-green transition"
+                className="flex items-center gap-2 text-sm text-christmas-red hover:text-red-700 font-medium transition"
               >
-                <Share2 className="w-4 h-4" />
-                Gruppe teilen
+                <QrCode className="w-4 h-4" />
+                Losnummern teilen
               </button>
             </div>
           )}

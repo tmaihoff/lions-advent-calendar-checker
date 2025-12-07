@@ -204,22 +204,9 @@ export const DayCard = memo<DayCardProps>(({ day, data, groups }) => {
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <div className="flex items-center justify-center gap-1 min-w-0 px-1">
-                {winGroups.length <= 5 ? (
-                  winGroups.map((_, idx) => (
-                    <div
-                      key={idx}
-                      className={`w-1.5 h-1.5 rounded-full transition-all shrink-0 ${
-                        idx === slideIndex
-                          ? "bg-christmas-red w-3"
-                          : "bg-christmas-green/30"
-                      }`}
-                    />
-                  ))
-                ) : (
-                  <span className="text-xs font-medium text-slate-400">
-                    {slideIndex + 1}/{winGroups.length}
-                  </span>
-                )}
+                <span className="text-xs font-medium text-slate-400">
+                  {slideIndex + 1}/{winGroups.length}
+                </span>
               </div>
               <button
                 onClick={nextSlide}

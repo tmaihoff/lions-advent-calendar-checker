@@ -56,11 +56,8 @@ export const WICHTEL_AVATARS = [
 export const INITIAL_GROUPS: Group[] = [
   {
     id: "g1",
-    name: "Meine Familie",
-    members: [
-      { id: "m1", name: "Papa", number: "1234", avatar: "🎅" },
-      { id: "m2", name: "Mama", number: "5678", avatar: "🤶" },
-    ],
+    name: "Meine Losnummern",
+    members: [],
   },
 ];
 
@@ -69,9 +66,20 @@ export const STORAGE_KEYS = {
   WINS: "lions_wins_v3",
   LAST_CHECK: "lions_last_check",
   DATA_SOURCE: "lions_data_source",
+  HOWTO_DISMISSED: "lions_howto_dismissed",
 } as const;
 
 export const LIVE_INDICATOR_DURATION = 15 * 60 * 1000; // 15 minutes
+
+// Event configuration
+export const EVENT_CONFIG = {
+  // Event runs from Dec 1 to Dec 24, 2025
+  YEAR: 2025,
+  START_DAY: 1,
+  END_DAY: 24,
+  // After this date, don't try to fetch live data anymore
+  EVENT_END_DATE: new Date("2025-12-25T00:00:00"),
+} as const;
 
 // Feature flags
 export const FEATURE_FLAGS = {

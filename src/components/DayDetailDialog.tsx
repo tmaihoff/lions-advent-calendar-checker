@@ -250,33 +250,9 @@ export const DayDetailDialog = memo<DayDetailDialogProps>(
                       <ChevronLeft className="w-5 h-5" />
                     </button>
                     <div className="flex items-center justify-center gap-1.5 min-w-0 px-2">
-                      {winGroups.length <= 7 ? (
-                        winGroups.map((group, idx) => {
-                          const hasWinner = getWinnersForGroup(group).length > 0;
-                          return (
-                            <button
-                              key={idx}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSlideIndex(idx);
-                              }}
-                              className={`w-2 h-2 rounded-full transition-all shrink-0 ${
-                                idx === slideIndex
-                                  ? hasWinner
-                                    ? "bg-christmas-gold w-5"
-                                    : "bg-christmas-red w-5"
-                                  : hasWinner
-                                  ? "bg-christmas-gold/40 hover:bg-christmas-gold/60"
-                                  : "bg-christmas-green/30 hover:bg-christmas-green/50"
-                              }`}
-                            />
-                          );
-                        })
-                      ) : (
-                        <span className="text-sm font-medium text-slate-500">
-                          {slideIndex + 1} / {winGroups.length}
-                        </span>
-                      )}
+                      <span className="text-sm font-medium text-slate-500">
+                        {slideIndex + 1} / {winGroups.length}
+                      </span>
                     </div>
                     <button
                       onClick={nextSlide}
