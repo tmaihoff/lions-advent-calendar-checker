@@ -311,10 +311,10 @@ export const Dashboard = memo<DashboardProps>(
                           #{win.member.number}
                         </span>
                       </div>
-                      <p className="text-sm text-gold-700 truncate">
+                      <p className="text-sm text-gold-700">
                         {win.prize}
                       </p>
-                      <p className="text-xs text-gold-500 uppercase tracking-wider truncate font-medium">
+                      <p className="text-xs text-gold-500 uppercase tracking-wider font-medium">
                         {win.sponsor}
                       </p>
                     </div>
