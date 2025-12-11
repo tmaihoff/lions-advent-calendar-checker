@@ -132,7 +132,7 @@ export const QuickCheckInput = memo<QuickCheckInputProps>(
             </p>
           )}
 
-          <div className="flex gap-2 mb-3">
+          <div className="flex flex-wrap gap-2 mb-3">
             {/* Avatar picker button */}
             <div className="relative" ref={avatarPickerRef}>
               <button
@@ -172,12 +172,12 @@ export const QuickCheckInput = memo<QuickCheckInputProps>(
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Name (optional)"
-              className="flex-1 px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-christmas-green focus:ring-2 focus:ring-christmas-green/20 outline-none transition-all bg-white placeholder:text-slate-400 text-sm"
+              className="flex-1 min-w-0 px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-christmas-green focus:ring-2 focus:ring-christmas-green/20 outline-none transition-all bg-white placeholder:text-slate-400 text-sm"
             />
             <button
               type="submit"
               disabled={number.length < 3 || isAlreadyAdded}
-              className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-christmas-green to-green-700 text-white font-semibold hover:from-green-700 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md btn-press"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-christmas-green to-green-700 text-white font-semibold hover:from-green-700 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md btn-press"
             >
               <Plus className="w-4 h-4" />
               Hinzufügen
