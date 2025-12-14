@@ -196,7 +196,7 @@ export const App: React.FC = () => {
       <div style={{ height: "400px" }} />
 
       {/* Main content */}
-      <main className="max-w-6xl mx-auto px-6 pt-4 pb-10 w-full flex-1 relative z-20">
+      <main className="max-w-6xl mx-auto px-6 pt-4 pb-10 w-full flex-1 relative">
         <HowToSection onShowQr={handleShowQr} />
 
         <QuickCheckInput groups={groups} onAddMember={handleAddMemberQuick} />
