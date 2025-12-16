@@ -21,7 +21,7 @@ export const QuickCheckInput = memo<QuickCheckInputProps>(
 
     const allMembers = groups.flatMap((g) => g.members);
     const number = digits.join("");
-    const isAlreadyAdded = allMembers.some((m) => m.number === number) && number.length >= 3;
+    const isAlreadyAdded = allMembers.some((m) => m.number === number) && number.length >= 1;
 
     // Close avatar picker when clicking outside
     useEffect(() => {
@@ -74,7 +74,7 @@ export const QuickCheckInput = memo<QuickCheckInputProps>(
     const handleSubmit = useCallback(
       (e: React.FormEvent) => {
         e.preventDefault();
-        if (number.length < 3) return;
+        if (number.length < 1) return;
         if (isAlreadyAdded) return;
 
         const memberName = name.trim() || `Los ${number}`;
@@ -100,7 +100,7 @@ export const QuickCheckInput = memo<QuickCheckInputProps>(
               Losnummer prüfen
             </h2>
             <p className="text-sm text-slate-500">
-              Gib deine Losnummer ein (3-4 Ziffern)
+              Gib deine Losnummer ein (1-4 Ziffern)
             </p>
           </div>
 
@@ -178,7 +178,7 @@ export const QuickCheckInput = memo<QuickCheckInputProps>(
             </div>
             <button
               type="submit"
-              disabled={number.length < 3 || isAlreadyAdded}
+              disabled={number.length < 1 || isAlreadyAdded}
               className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-christmas-green to-green-700 text-white font-semibold hover:from-green-700 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md btn-press"
             >
               <Plus className="w-4 h-4" />
