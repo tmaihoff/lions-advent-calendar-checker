@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-12-07T19:49:44.666Z",
+  "lastUpdated": "2025-12-16T11:13:34.130Z",
   "dayData": [
     {
       "day": 1,
@@ -352,6 +352,460 @@
           "sponsor": "Weinwerk Stepp",
           "prize": "3 Flaschen Wein im Wert von 25 €",
           "numbers": ["340"]
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "winGroups": [
+        {
+          "sponsor": "Weingut Uli Karst",
+          "prize": "3er Weinpaket im Wert von 30 €",
+          "numbers": ["3065", "3285", "1938", "1091", "1928"]
+        },
+        {
+          "sponsor": "Sektgut Motzenbäcker (Florentiner Palais GmbH)",
+          "prize": "Flasche Sekt Méthode Rurale Rosé 2019 im Wert von 25,5 €",
+          "numbers": ["1606", "868", "907", "2595", "1330"]
+        },
+        {
+          "sponsor": "Sanitätshaus Horr",
+          "prize": "Gutschein im Wert von 50 €",
+          "numbers": ["2997"]
+        },
+        {
+          "sponsor": "Raiffeisen Warengenossenschaft eG",
+          "prize": "Warengutschein im Wert von 25 €",
+          "numbers": ["2235", "2973"]
+        },
+        {
+          "sponsor": "Optik Wagner",
+          "prize": "Gutschein im Wert von 25 €",
+          "numbers": ["2725", "12"]
+        },
+        {
+          "sponsor": "Lerzer Friseur am Schlossplatz",
+          "prize": "Gutschein für Friseurdienstleistungen im Wert von 26 €",
+          "numbers": [
+            "2006",
+            "3101",
+            "1920",
+            "1768",
+            "3311",
+            "268",
+            "2596",
+            "1359",
+            "1231",
+            "1622",
+            "1849"
+          ]
+        }
+      ]
+    },
+    {
+      "day": 9,
+      "winGroups": [
+        {
+          "sponsor": "Sportpark Friedelsheim",
+          "prize": "4 Wochen Fitness & Wellness im Wert von 92 €",
+          "numbers": ["1171", "666", "1346"]
+        },
+        {
+          "sponsor": "Restaurant 7 Raben",
+          "prize": "Gutschein für kulinarisches im Wert von 50 €",
+          "numbers": ["1232"]
+        },
+        {
+          "sponsor": "Manthey Bekleidungshaus GmbH",
+          "prize": "Einkaufsgutschein im Wert von 25 €",
+          "numbers": ["334", "520", "2536", "15"]
+        },
+        {
+          "sponsor": "Friseur Greving",
+          "prize": "Gutschein im Wert von 35 €",
+          "numbers": [
+            "2938",
+            "1903",
+            "597",
+            "1957",
+            "2035",
+            "2004",
+            "620",
+            "1654",
+            "2487",
+            "2143",
+            "251",
+            "2083",
+            "742",
+            "2894",
+            "3382"
+          ]
+        }
+      ]
+    },
+    {
+      "day": 10,
+      "winGroups": [
+        {
+          "sponsor": "Goutorbe-Wagner Reben GmbH",
+          "prize": "Zwei Tafeltrauben-Pflanzen im Wert von 25 €",
+          "numbers": ["237", "2333", "363"]
+        },
+        {
+          "sponsor": "Brunnen-Apotheke",
+          "prize": "Einkaufsgutschein im Wert von 30 €",
+          "numbers": ["2178", "2581", "2462", "2461"]
+        },
+        {
+          "sponsor": "Café und Weinbar HENSEL UND GRETEL",
+          "prize": "Verzehrgutschein im Wert von 25 €",
+          "numbers": ["1973", "296", "494", "1655", "2845"]
+        },
+        {
+          "sponsor": "Bio-Weingut Kohl GBR",
+          "prize": "Weingutschein im Wert von 25 €",
+          "numbers": ["420", "599", "1672", "1811"]
+        },
+        {
+          "sponsor": "B&T Kurpfalz-Park",
+          "prize": "2 Eintrittskarten im Wert von 38 €",
+          "numbers": ["2189", "3441", "484"]
+        },
+        {
+          "sponsor": "Lerzer Friseur am Schlossplatz",
+          "prize": "Gutschein für Friseurdienstleistungen im Wert von 26 €",
+          "numbers": [
+            "1767",
+            "1225",
+            "2789",
+            "172",
+            "809",
+            "2539",
+            "368",
+            "3410",
+            "2537",
+            "2245",
+            "404",
+            "3112",
+            "1697",
+            "1571",
+            "734"
+          ]
+        },
+        {
+          "sponsor": "amling Mode",
+          "prize": "Gutschein im Wert von 25 €",
+          "numbers": ["1623", "1198", "1742", "263", "2692"]
+        }
+      ]
+    },
+    {
+      "day": 11,
+      "winGroups": [
+        {
+          "sponsor": "Die \"Alte Schmelz\"",
+          "prize": "Verzehrgutschein im Wert von 25 €",
+          "numbers": ["2122"]
+        },
+        {
+          "sponsor": "Thachisia Asia-Haus",
+          "prize": "Essensgutschein im Wert von 25 €",
+          "numbers": ["1112", "1618", "972"]
+        },
+        {
+          "sponsor": "Vier Jahreszeiten Winzer eG",
+          "prize": "3 Flaschen Wein im Wert von 30 €",
+          "numbers": ["918"]
+        },
+        {
+          "sponsor": "Optik Wagner",
+          "prize": "Gutschein im Wert von 25 €",
+          "numbers": ["2892", "2249", "3115"]
+        },
+        {
+          "sponsor": "Friseur Greving",
+          "prize": "Gutschein im Wert von 35 €",
+          "numbers": [
+            "434",
+            "3124",
+            "2688",
+            "900",
+            "3322",
+            "692",
+            "3381",
+            "2516",
+            "3017",
+            "2271",
+            "2829",
+            "1781",
+            "1497",
+            "1146",
+            "1482"
+          ]
+        },
+        {
+          "sponsor": "Göbel e.K., Leistadter Sandsteinbruch",
+          "prize": "Weinkühler Spezial im Wert von 75 €",
+          "numbers": ["2021"]
+        },
+        {
+          "sponsor": "Kur Apotheke",
+          "prize": "Warengutschein im Wert von 50 €",
+          "numbers": ["2039", "864"]
+        }
+      ]
+    },
+    {
+      "day": 12,
+      "winGroups": [
+        {
+          "sponsor": "Lerzer Friseur am Schlossplatz",
+          "prize": "Gutschein für Friseurdienstleistungen im Wert von 26 €",
+          "numbers": [
+            "2363",
+            "2916",
+            "2292",
+            "1612",
+            "2154",
+            "2564",
+            "1909",
+            "927",
+            "2914",
+            "3223",
+            "685",
+            "77",
+            "552",
+            "1711",
+            "2991"
+          ]
+        },
+        {
+          "sponsor": "amling Mode",
+          "prize": "Gutschein im Wert von 25 €",
+          "numbers": ["755", "1033", "1039", "1804", "1643"]
+        },
+        {
+          "sponsor": "Apotheke am Obermarkt",
+          "prize": "Gutschein im Wert von 25 €",
+          "numbers": ["188", "1156"]
+        },
+        {
+          "sponsor": "Auto Köhler GmbH & Co. KG",
+          "prize": "Autozubehör im Wert von 50 €",
+          "numbers": ["224", "2918", "2677", "380"]
+        },
+        {
+          "sponsor": "Bäckerei Sippel",
+          "prize": "Rahmkuchen mit Heidelbeeren im Wert von 30 €",
+          "numbers": ["1207"]
+        },
+        {
+          "sponsor": "Alte Gärtnerei | Blumen & Café",
+          "prize": "Gutschein im Wert von 25 €",
+          "numbers": ["2632", "2606", "2583"]
+        },
+        {
+          "sponsor": "Hauers Gutsausschank",
+          "prize": "Gutschein für Hauer’s Gutsausschank im Wert von 25 €",
+          "numbers": ["1168", "1710"]
+        }
+      ]
+    },
+    {
+      "day": 13,
+      "winGroups": [
+        {
+          "sponsor": "HIT Handelsgruppe Bad Dürkheim",
+          "prize": "Einkaufsgutschein im Wert von 25 €",
+          "numbers": ["430", "1784"]
+        },
+        {
+          "sponsor": "Lintz und Wolf Holzbau GmbH",
+          "prize": "Gutschein im Wert von 25 €",
+          "numbers": ["1522", "2803", "1351", "1636", "943"]
+        },
+        {
+          "sponsor": "Manthey Bekleidungshaus GmbH",
+          "prize": "Einkaufsgutschein im Wert von 25 €",
+          "numbers": ["1589", "1932", "722", "3351", "3371"]
+        },
+        {
+          "sponsor": "Optik Hübler",
+          "prize": "Warengutschein im Wert von 25 €",
+          "numbers": ["3234", "1135"]
+        },
+        {
+          "sponsor": "Sektgut Motzenbäcker (Florentiner Palais GmbH)",
+          "prize": "Flasche Sekt Méthode Rurale Rosé 2019 im Wert von 25,5 €",
+          "numbers": ["1959", "1172", "843", "461", "2813"]
+        },
+        {
+          "sponsor": "Praxis Kästel Oralchirurgie",
+          "prize": "elektrische Zahnbürste im Wert von 100 €",
+          "numbers": ["3337"]
+        },
+        {
+          "sponsor": "Sportpark Friedelsheim",
+          "prize": "4 Wochen Fitness & Wellness im Wert von 92 €",
+          "numbers": ["1845"]
+        },
+        {
+          "sponsor": "Salinarium Bad Dürkheim - Therme",
+          "prize": "Quartalskarte Karte für das Bad Salinarium im Wert von 120 €",
+          "numbers": ["1178"]
+        },
+        {
+          "sponsor": "Salinarium Bad Dürkheim - Therme",
+          "prize": "2 Karten für Therme und Bad Salinarium im Wert von 57,4 €",
+          "numbers": ["2152", "2804"]
+        },
+        {
+          "sponsor": "Spezialitätenmetzgerei Tempel GmbH",
+          "prize": "Gutschein im Wert von 25 €",
+          "numbers": ["928", "3210"]
+        }
+      ]
+    },
+    {
+      "day": 14,
+      "winGroups": [
+        {
+          "sponsor": "Friseur Greving",
+          "prize": "Gutschein im Wert von 35 €",
+          "numbers": [
+            "727",
+            "517",
+            "2011",
+            "838",
+            "2319",
+            "2452",
+            "287",
+            "108",
+            "2351",
+            "3149",
+            "1114",
+            "1709",
+            "1857",
+            "3256",
+            "3096"
+          ]
+        },
+        {
+          "sponsor": "Göbel e.K., Leistadter Sandsteinbruch",
+          "prize": "Gartenfackel Ethanol im Wert von 43 €",
+          "numbers": ["2685"]
+        },
+        {
+          "sponsor": "Weingut Dr. Bürklin-Wolf",
+          "prize": "Weinpräsent im Wert von 40 €",
+          "numbers": ["2166", "1599", "1210", "870", "568"]
+        },
+        {
+          "sponsor": "Gartenhotel Heusser",
+          "prize": "Gutschein zum Sonntags-Schlemmerbuffet im Wert von 49 €",
+          "numbers": ["3069", "994"]
+        },
+        {
+          "sponsor": "Weingut Karsten Peter",
+          "prize": "Ein Ancestral Verkostungspaket im Wert von 36,5 €",
+          "numbers": ["1999", "1998", "2749"]
+        }
+      ]
+    },
+    {
+      "day": 15,
+      "winGroups": [
+        {
+          "sponsor": "Salinarium Bad Dürkheim - Therme",
+          "prize": "2 Karten für Therme und Bad Salinarium im Wert von 57,4 €",
+          "numbers": ["497", "670", "13"]
+        },
+        {
+          "sponsor": "Raiffeisen Warengenossenschaft eG",
+          "prize": "Warengutschein im Wert von 25 €",
+          "numbers": ["147", "3359"]
+        },
+        {
+          "sponsor": "Rösers Restaurant im Weinrefugium",
+          "prize": "Gutschein40 im Wert von 40 €",
+          "numbers": ["1583", "2956"]
+        },
+        {
+          "sponsor": "Sanitätshaus Horr",
+          "prize": "Gutschein im Wert von 50 €",
+          "numbers": ["2412", "1334"]
+        },
+        {
+          "sponsor": "Sektgut Motzenbäcker (Florentiner Palais GmbH)",
+          "prize": "Flasche Sekt Méthode Rurale Rosé 2019 im Wert von 25,5 €",
+          "numbers": ["3406", "1358"]
+        },
+        {
+          "sponsor": "Lerzer Friseur am Schlossplatz",
+          "prize": "Gutschein für Friseurdienstleistungen im Wert von 26 €",
+          "numbers": [
+            "2934",
+            "2766",
+            "2176",
+            "3301",
+            "2081",
+            "385",
+            "751",
+            "1662",
+            "2450",
+            "950",
+            "998",
+            "1628",
+            "3350",
+            "807",
+            "3133",
+            "1770",
+            "1275",
+            "713",
+            "803",
+            "1268"
+          ]
+        }
+      ]
+    },
+    {
+      "day": 16,
+      "winGroups": [
+        {
+          "sponsor": "Sport vor Ort",
+          "prize": "Personaltraining im Wert von 50 €",
+          "numbers": ["919", "314", "554"]
+        },
+        {
+          "sponsor": "Modehaus Rissel GmbH",
+          "prize": "Gutschein im Wert von 25 €",
+          "numbers": ["1506", "350", "419", "2664"]
+        },
+        {
+          "sponsor": "Weingut Theis Heissler",
+          "prize": "3er Weinpaket im Wert von 30 €",
+          "numbers": ["394", "18"]
+        },
+        {
+          "sponsor": "Konditorei Eberle „Zuggerschnud“",
+          "prize": "Tortengutschein im Wert von 25 €",
+          "numbers": ["1248", "931"]
+        },
+        {
+          "sponsor": "Friseur Greving",
+          "prize": "Gutschein im Wert von 35 €",
+          "numbers": [
+            "2213",
+            "1832",
+            "879",
+            "728",
+            "1106",
+            "3280",
+            "532",
+            "157",
+            "1454",
+            "2296"
+          ]
         }
       ]
     }
